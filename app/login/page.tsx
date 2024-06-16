@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
 
@@ -22,7 +22,7 @@ export default function Login({
     });
 
     if (error) {
-      return redirect("/login?message=Could not authenticate user");
+      return redirect("/login?message=Couzld not authenticate user");
     }
 
     return redirect("/protected");
