@@ -1,47 +1,62 @@
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import Footer from "@/components/element/Footer";
-import HeaderNav from "@/components/layout/HeaderWrap";
+import { Navbar } from "@/components/element/Navbar";
 import { getUserDetail } from "@/hooks/auth/useUserDetail";
 import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
 import { getRefresh, getSession, refreshSession } from "@/lib/auth/auth";
+import { cn } from "@/lib/utils";
 import { getUserCredentials } from "@/utils/auth/auth";
 import type { RefreshSession, Session } from "@prisma/client";
-import { cookies } from "next/headers";
+import { Nunito_Sans, Poppins } from "next/font/google";
+const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-heading",
+  weight: ["400", "500", "600", "700", "800", "900"], // Add the weights you need
+});
 
+const nunitoSans = Nunito_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body",
+  weight: ["200", "300", "400", "600", "700", "800", "900"], // Add the weights you need
+});
 const defaultUrl = process.env.VERCEL_URL
-	? `https://${process.env.VERCEL_URL}`
-	: "http://localhost:3000";
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
 
 export const metadata = {
-	metadataBase: new URL(defaultUrl),
-	title: "Next.js Kit",
-	description: "The fastest way to build apps with Next.js and Supabase",
+  metadataBase: new URL(defaultUrl),
+  title: "Next.js Kit",
+  description: "The fastest way to build apps with Next.js and Supabase",
 };
 
 export default async function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	const session = await getSession();
-	const refresh = await getRefresh();
-	console.log(refresh);
-	let user = null;
-	if (session?.userId) {
-		user = await getUserDetail(session.userId);
-	}
-	return (
-		<html lang="en" className={GeistSans.className}>
-			<body className="bg-background text-foreground ">
-				<RefreshHandler
-					initialSession={session as sessionEror}
-					refreshToken={refresh as RefreshSession}
-				/>
-				<HeaderNav user={user} />
-				{children}
-				<Footer />
-			</body>
-		</html>
-	);
+  const session = await getSession();
+  const refresh = await getRefresh();
+  console.log(refresh);
+  let user = null;
+  if (session?.userId) {
+    user = await getUserDetail(session.userId);
+  }
+  return (
+    <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
+      <body>
+        <RefreshHandler
+          initialSession={session as sessionEror}
+          refreshToken={refresh as RefreshSession}
+        />
+        <header>
+          <Navbar user={user} />
+        </header>
+        {children}
+        <Footer />
+      </body>
+    </html>
+  );
 }

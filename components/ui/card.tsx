@@ -1,12 +1,12 @@
-import * as React from "react";
 import { cn } from "@/lib/utils";
+import * as React from "react";
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("items-center shadow-slate-200 shadow-xl", className)}
+    className={cn("items-center shadow-sh-card", className)}
     {...props}
   />
 ));
@@ -16,6 +16,7 @@ const CardImage = React.forwardRef<
   HTMLImageElement,
   React.ImgHTMLAttributes<HTMLImageElement>
 >(({ className, ...props }, ref) => (
+  // biome-ignore lint/a11y/useAltText: <explanation>
   <img
     ref={ref}
     className={cn("aspect-square object-contain", className)}
@@ -90,7 +91,7 @@ const ObjectColors = React.forwardRef<
   <div
     ref={ref}
     style={{ backgroundColor: `${color}` }}
-    className={cn(`w-4 h-1 rounded-full `, className)}
+    className={cn("w-4 h-1 rounded-full ", className)}
     {...props}
   />
 ));
