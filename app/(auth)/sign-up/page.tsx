@@ -1,12 +1,10 @@
-"use server";
-import { createClient } from "@/app/utils/server";
+"use client";
 import { SignUpForm } from "@/components/forms/SignUpForm";
-import { headers } from "next/headers";
 
-export default async function SignUpPage() {
-  return (
-    <div className="shadow-2xl shadow-slate-200 py-10">
-      <SignUpForm />
-    </div>
-  );
+export default function SignUpPage() {
+	return (
+		<div>
+			<SignUpForm />
+		</div>
+	);
 }

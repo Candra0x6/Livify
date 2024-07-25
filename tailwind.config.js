@@ -36,6 +36,7 @@ module.exports = {
         LatoBold: "Lato-Bold",
         LatoBlack: "Lato-Black",
         LatoLight: "Lato-Light",
+        Poppins: "Poppins",
       },
     },
   },

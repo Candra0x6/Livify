@@ -1,11 +1,5 @@
 "use client";
 
-import { Text } from "./ui/text";
-import Image from "next/image";
-import UserIcon from "../public/icons/user.svg";
-import { redirect, useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,30 +9,58 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
-import UserDefaultAvatarProfile from "../public/images/user-default-avatar.png";
+import { getSession } from "@/lib/auth/auth";
+import { signOut } from "@/utils/auth/auth";
+import { createClient } from "@/utils/supabase/client";
+import type { User } from "@prisma/client";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import type { IconType } from "react-icons";
 import { CgProfile } from "react-icons/cg";
-import { SlSettings } from "react-icons/sl";
-import { TbLayoutDashboard } from "react-icons/tb";
-import { HiOutlineClipboardDocumentList } from "react-icons/hi2";
 import { IoLogInOutline } from "react-icons/io5";
+import { TbLayoutDashboard } from "react-icons/tb";
+import UserIcon from "../public/icons/user.svg";
+import UserDefaultAvatarProfile from "../public/images/user-default-avatar.png";
+import { Text } from "./ui/text";
+
+export interface IconMenuListProps {
+  name: string;
+  href: string;
+  icon: IconType;
+}
+const accountMenuList: IconMenuListProps[] = [
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: CgProfile,
+  },
+  {
+    name: "Dashboard",
+    href: "/seller/dashboard",
+    icon: TbLayoutDashboard,
+  },
+];
 
 export default function AuthButton({ user }: { user: User | null }) {
   const router = useRouter();
-  const supabase = createClient();
   const signOutAction = async () => {
     try {
-      await supabase.auth.signOut();
+      const session = await getSession();
+
+      await signOut(session?.userId as string);
     } catch (err) {
-      throw err;
+      console.error(err);
     } finally {
-      redirect("/sign-in");
+      router.push("/sign-in");
     }
   };
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="aspect-square rounded-full w-7 overflow-hidden bg-black">
+        <button
+          type="button"
+          className="aspect-square rounded-full w-7 overflow-hidden bg-black"
+        >
           <Image
             src={UserDefaultAvatarProfile}
             alt="user-default-avatar-profile "
@@ -47,26 +69,23 @@ export default function AuthButton({ user }: { user: User | null }) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-2 bg-white rounded-none">
-        <DropdownMenuLabel className="text-lg">
-          {user.user_metadata.username}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel className="text-lg">{user.name}</DropdownMenuLabel>
         <DropdownMenuLabel className="text-subtext2 -mt-3">
           {user.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup className=" ">
-          <DropdownMenuItem className="gap-x-2 flex items-center">
-            <CgProfile className="text-lg" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="gap-x-2 flex items-center">
-            <HiOutlineClipboardDocumentList className="text-lg" />
-            <span>Orders</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="gap-x-2 flex items-center">
-            <TbLayoutDashboard className="text-lg" />
-            <span>Dashboard</span>
-          </DropdownMenuItem>
+          {accountMenuList.map((menu, i) => (
+            <DropdownMenuItem
+              onClick={() => router.push(menu.href)}
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              key={i}
+              className="gap-x-2 flex items-center"
+            >
+              <menu.icon className="text-lg" />
+              <span>{menu.name}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuSeparator />
@@ -81,7 +100,8 @@ export default function AuthButton({ user }: { user: User | null }) {
     </DropdownMenu>
   ) : (
     <button
-      onClick={() => router.push("/sign-in")}
+      type="button"
+      onClick={signOutAction}
       className="flex gap-x-2 items-center"
     >
       <Text className="text-white font-JosefinSemibold text-md ">Login</Text>

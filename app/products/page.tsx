@@ -1,25 +1,42 @@
 "use client";
-import React from "react";
+import ProductGridCard from "@/components/cards/ProductGridCard";
+import ProductListCard from "@/components/cards/ProductListCard";
 import ContainerLayout from "@/components/layout/ContainerLayout";
-import Grid from "@/components/ui/grid";
+import { Checkbox } from "@/components/ui/checkbox";
 import Flex from "@/components/ui/flex";
+import Grid from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import GridIcon from "../../public/icons/grid-view.svg";
-import ListIcon from "../../public/icons/list-view.svg";
 import {
   Select,
-  SelectTrigger,
-  SelectItem,
   SelectContent,
+  SelectItem,
+  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Text } from "@/components/ui/text";
+import type { Product } from "@prisma/client";
 import Image from "next/image";
-import ProductGridCard from "@/components/cards/ProductGridCard";
-import { Checkbox } from "@/components/ui/checkbox";
-import ProductListCard from "@/components/cards/ProductListCard";
+import React, { useEffect, useState } from "react";
+import GridIcon from "../../public/icons/grid-view.svg";
+import ListIcon from "../../public/icons/list-view.svg";
 
-export default function Product() {
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>();
+  useEffect(() => {
+    const getAllProducts = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product`,
+        {
+          method: "GET",
+        }
+      );
+      const data = await res.json();
+      setProducts(data.products);
+    };
+
+    getAllProducts();
+  }, []);
+
   const [selectValue, setSelectValue] = React.useState("grid-view");
 
   const colorList = ["#DE9034", "#EC42A2", "#8568FF"];
@@ -198,20 +215,26 @@ export default function Product() {
           gap={15}
           className="grid-flow-row w-[80%]"
         >
-          {Array.from({ length: 12 }).map((_, index) => {
-            const Comp =
-              selectValue === "grid-view" ? ProductGridCard : ProductListCard;
-            return (
-              <Comp
-                key={index}
-                name="Vitae Supandes"
-                image="https://pngimg.com/uploads/chair/chair_PNG6862.png"
-                price={30.212}
-                color={colorList}
-                description="Lorem ipsum dolor sit amet, consectetur adip non proident et non proident et et et et et et et et et et et et et et et et"
-              />
-            );
-          })}
+          {products &&
+            products.length > 0 &&
+            products.map((item, index) => {
+              const Comp =
+                selectValue === "grid-view" ? ProductGridCard : ProductListCard;
+              return (
+                <Comp
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  key={index}
+                  name={item.name}
+                  image={item.images[0]}
+                  price={item.price as unknown as number}
+                  color={colorList}
+                  description={item.description as string}
+                  productId={item.id}
+                  slug={item.slug}
+                  storeId={item.storeId}
+                />
+              );
+            })}
         </Grid>
       </Flex>
     </ContainerLayout>
