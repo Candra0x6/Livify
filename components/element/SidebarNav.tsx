@@ -1,73 +1,129 @@
 "use client";
-import type { IconMenuListProps } from "@/components/AuthButton";
-import { Text } from "@/components/ui/text";
-import {
-	redirect,
-	usePathname,
-	useRouter,
-	useSelectedLayoutSegment,
-} from "next/navigation";
+
+import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { BiBox } from "react-icons/bi";
 import { LuClipboardList } from "react-icons/lu";
 import { MdOutlineStorefront } from "react-icons/md";
 import { TbLayoutDashboard } from "react-icons/tb";
-interface SidebarNavigation extends IconMenuListProps {
-	segment: string | null;
-	id: number;
+
+interface IconMenuListProps {
+  name: string;
+  href: string;
+  icon: React.ElementType;
 }
 
-export const DashboardMenuList: SidebarNavigation[] = [
-	{
-		id: 0,
-		name: "Dashboard",
-		href: "/seller/dashboard",
-		icon: TbLayoutDashboard,
-		segment: null,
-	},
-	{
-		id: 1,
-		name: "Products",
-		href: "/seller/dashboard/products",
-		icon: BiBox,
-		segment: "products",
-	},
-	{
-		id: 2,
-		name: "Order Lists",
-		href: "/seller/dashboard/orders",
-		icon: LuClipboardList,
-		segment: "orders",
-	},
-	{
-		id: 3,
-		name: "Store",
-		href: "/seller/dashboard/store",
-		icon: MdOutlineStorefront,
-		segment: "store",
-	},
+interface SidebarNavigation extends IconMenuListProps {
+  segment: string | null;
+  id: number;
+}
+
+const DashboardMenuList: SidebarNavigation[] = [
+  {
+    id: 0,
+    name: "Dashboard",
+    href: "/seller/dashboard",
+    icon: TbLayoutDashboard,
+    segment: null,
+  },
+  {
+    id: 1,
+    name: "Products",
+    href: "/seller/dashboard/products",
+    icon: BiBox,
+    segment: "products",
+  },
+  {
+    id: 2,
+    name: "Order Lists",
+    href: "/seller/dashboard/orders",
+    icon: LuClipboardList,
+    segment: "orders",
+  },
+  {
+    id: 3,
+    name: "Store",
+    href: "/seller/dashboard/store",
+    icon: MdOutlineStorefront,
+    segment: "store",
+  },
 ];
+
 const SidebarNav: React.FC = () => {
-	const router = useRouter();
-	const segment = useSelectedLayoutSegment();
-	return (
-		<aside className="w-[15%] h-full bg-white border-gray-200 pt-10 border-r-[2px] pr-3">
-			<div className="grid grid-flow-row grid-cols-1 space-y-2">
-				{DashboardMenuList.map((menu, i) => (
-					<div
-						key={menu.id}
-						onClick={() => router.push(menu.href)}
-						onKeyUp={() => router.push(menu.href)}
-						className={`flex space-x-3 p-3 hover:bg-slate-100 cursor-pointer ${
-							segment === menu.segment ? "bg-slate-100" : ""
-						}`}
-					>
-						<menu.icon className="text-xl" />
-						<Text className="font-JosefinSemibold text-md">{menu.name}</Text>
-					</div>
-				))}
-			</div>
-		</aside>
-	);
+  const router = useRouter();
+  const segment = useSelectedLayoutSegment();
+  const [indicatorStyle, setIndicatorStyle] = useState({});
+  const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (navRef.current) {
+        const activeItem = navRef.current.querySelector(
+          `[data-segment="${segment ?? ""}"]`
+        ) as HTMLElement;
+
+        if (activeItem) {
+          setIndicatorStyle({
+            top: `${activeItem.offsetTop}px`,
+          });
+        } else {
+          // Jika tidak ada item aktif, atur indikator ke item pertama
+          const firstItem = navRef.current.querySelector(
+            ":scope > div:not([data-segment])"
+          ) as HTMLElement;
+
+          if (firstItem) {
+            setIndicatorStyle({
+              top: `${firstItem.offsetTop}px`,
+            });
+          }
+        }
+      }
+    };
+
+    updateIndicator();
+    // Tunggu sebentar untuk memastikan DOM telah dirender sepenuhnya
+    const timer = setTimeout(updateIndicator, 0);
+
+    return () => clearTimeout(timer);
+  }, [segment]);
+
+  return (
+    <aside className="w-full h-full pt-3 bg-white shadow-sh-card rounded-lg relative">
+      <div className="grid grid-rows-4 w-full relative" ref={navRef}>
+        {DashboardMenuList.map((menu) => (
+          <div
+            key={menu.id}
+            className="px-3 py-1 w-full h-full flex relative items-center"
+            data-segment={menu.segment}
+          >
+            <div
+              onClick={() => router.push(menu.href)}
+              onKeyUp={() => router.push(menu.href)}
+              className={`flex space-x-3 p-3 hover:bg-primary font-medium cursor-pointer w-full hover:text-primary-foreground rounded-lg z-10 ${
+                segment === menu.segment ? " text-primary-foreground" : ""
+              }`}
+            >
+              <menu.icon className="text-2xl" />
+              <h1 className="text-md hover:bg-primary hover:text-white w-full">
+                {menu.name}
+              </h1>
+            </div>
+          </div>
+        ))}
+        <div
+          className="absolute w-full h-14 flex left-0 px-3 py-1 z-0 transition-all duration-500"
+          style={indicatorStyle}
+        >
+          <div className="rounded-lg bg-primary w-full h-full transition-all duration-500" />
+        </div>
+        <div
+          className="absolute left-0 w-1 h-14 rounded-r-full bg-primary transition-all duration-500"
+          style={indicatorStyle}
+        />
+      </div>
+    </aside>
+  );
 };
 
 export default SidebarNav;

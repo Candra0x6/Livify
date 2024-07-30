@@ -6,32 +6,36 @@
 @layer base {
   :root {
     --background: 0 0% 96%;
-    --foreground: 233, 15%, 31%;
+    --foreground: 232.5 15.38% 30.59%;
+    --text-secondary : 0 1% 64%;
 
     --card: 0 0% 100%;
-    --card-foreground: 233, 15%, 31%
+    --card-foreground: 232.5 15.38% 30.59%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 233, 15%, 31%;
+    --popover-foreground: 232.5 15.38% 30.59%;
 
-    --primary: 232 89% 55%;
+    --primary: 231.72 89.43% 55.49%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 232 89% 55%;
+    --secondary: 226 100% 94%;
+    --secondary-foreground: 231.72 89.43% 55.49%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 232 89% 55%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
+    --meta : 217 40% 96%;
+    --meta-foreground : 232.5 15.38% 30.59%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 233, 15%, 31%;
+    --ring: 232.5 15.38% 30.59%;
 
     --radius: 0.5rem;
   }
@@ -78,4 +82,8 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
+}
+
+.slick-prev, .slick-next {
+  display: none !important;
 }

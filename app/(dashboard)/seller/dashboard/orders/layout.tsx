@@ -1,10 +1,11 @@
+import SectionHeader from "@/components/SectionHeader";
 import { Heading } from "@/components/ui/heading";
 import Orders from "./page";
 
 export default async function OrdersLayout() {
   return (
     <>
-      <Heading className="text-primarytext mb-10">Products</Heading>
+      <SectionHeader title="Orders" description="Orders Products Data" />
       <Orders />
     </>
   );

@@ -21,9 +21,9 @@ export async function PATCH(request: NextRequest) {
 		if (!sessionToken || !refreshToken) {
 			return NextResponse.json({ message: "Missing tokens" }, { status: 400 });
 		}
-
+		const randomNum = Math.floor((Math.random() * 100))
 		const newSessionToken = generateToken(sessionToken);
-		const newRefreshToken = generateToken(`${sessionToken}a`);
+		const newRefreshToken = generateToken(`user ${randomNum}`);
 		const newExpireSession = new Date(Date.now() + 24 * 60 * 60 * 1000);
 		const newExpireRefresh = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 

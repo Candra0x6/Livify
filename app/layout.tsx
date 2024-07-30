@@ -7,7 +7,7 @@ import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
 import { getRefresh, getSession, refreshSession } from "@/lib/auth/auth";
 import { cn } from "@/lib/utils";
 import { getUserCredentials } from "@/utils/auth/auth";
-import type { RefreshSession, Session } from "@prisma/client";
+import type { RefreshSession, Session, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -40,10 +40,12 @@ export default async function RootLayout({
   const session = await getSession();
   const refresh = await getRefresh();
   console.log(refresh);
-  let user = null;
+  let user: { user: User } | null = null;
   if (session?.userId) {
-    user = await getUserDetail(session.userId);
+    const res = await getUserDetail(session.userId);
+    user = res;
   }
+  console.log(user);
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body>
@@ -52,7 +54,7 @@ export default async function RootLayout({
           refreshToken={refresh as RefreshSession}
         />
         <header>
-          <Navbar user={user} />
+          <Navbar user={user?.user} />
         </header>
         {children}
         <Footer />

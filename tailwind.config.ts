@@ -29,6 +29,7 @@ const config = {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        textSecondary: 'hsl(var(--text-secondary))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -57,6 +58,10 @@ const config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        meta: {
+          DEFAULT: 'hsl(var(--meta))',
+          foreground: 'hsl(var(--meta-foreground))'
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -74,10 +79,19 @@ const config = {
           // @ts-ignore
           to: { height: 0 },
         },
+        'slide': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(-50%)' },
+        },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(calc(-250px * 14))' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'scroll': 'slide 20s linear infinite',
       },
       boxShadow: {
         'sh-card': '0px 3px 8px rgba(0, 0, 0, 0.24)'

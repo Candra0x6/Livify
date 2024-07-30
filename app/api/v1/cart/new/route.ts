@@ -54,12 +54,12 @@ export async function POST(request: Request) {
     console.error("Error adding cart:", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(
-        { message: "Database error", code: error.code },
+        { message: "Database error", code: error },
         { status: 400 },
       );
     }
     return NextResponse.json(
-      { message: "Unable to order", code: error },
+      { message: "Unable add to cart", code: error },
       { status: 500 },
     );
   }

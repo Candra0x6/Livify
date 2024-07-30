@@ -5,9 +5,11 @@ export default async function DashboardLayout({
 }: React.PropsWithChildren) {
   return (
     <>
-      <div className="w-full h-[200vh] container mx-auto flex">
-        <SidebarNav />
-        <main className="flex-1 p-10">{children}</main>
+      <div className="w-full mt-[4rem] h-screen flex">
+        <header className="max-w-[20%] w-full">
+          <SidebarNav />
+        </header>
+        <main className="p-10 w-full max-w-[80%] ">{children}</main>
       </div>
     </>
   );

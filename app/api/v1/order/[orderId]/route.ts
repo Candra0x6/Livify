@@ -12,7 +12,6 @@ export async function GET(
 ) {
   try {
     const orderId = params.orderId;
-
     if (!orderId) {
       throw new AppError(401, "Missing or Invalid order Id");
     }
@@ -24,7 +23,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        orders: order,
+        order,
       },
       200,
     );

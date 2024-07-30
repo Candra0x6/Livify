@@ -1,11 +1,20 @@
 "use client";
-import ProductGridCard from "@/components/cards/ProductGridCard";
+import SectionHeader from "@/components/SectionHeader";
+import { ProductCard } from "@/components/cards/ProductCard";
 import ProductListCard from "@/components/cards/ProductListCard";
 import ContainerLayout from "@/components/layout/ContainerLayout";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Flex from "@/components/ui/flex";
 import Grid from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import type { Product } from "@prisma/client";
 import Image from "next/image";
@@ -42,28 +52,24 @@ export default function ProductsPage() {
   const colorList = ["#DE9034", "#EC42A2", "#8568FF"];
   return (
     <ContainerLayout>
-      <Grid columns={2} rows={1} className="w-full place-content-start my-10">
+      <Grid
+        columns={2}
+        rows={1}
+        className="w-full place-content-start my-10 mt-36"
+      >
         <Flex direction="column">
-          <Heading className="text-primarytext" size="lg">
-            Explore All Poducts
-          </Heading>
-          <Text className="font-LatoRegular text-subtext2 text-sm">
-            About 201 products
-          </Text>
+          <SectionHeader
+            title="Explore All Products"
+            description="About 201 Product"
+          />
         </Flex>
         <Flex className="w-full" justify="flex-end" align="center" gap={30}>
           <form className="max-w-sm flex items-center h-full py-2 w-[180px] gap-x-2">
-            <label
-              htmlFor="sort"
-              className=" text-md font-JosefinRegular text-primarytext"
-            >
-              Sort
-            </label>
             <Select>
-              <SelectTrigger className="">
+              <SelectTrigger className="bg-white rounded-xl shadow-sh-card">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white rounded-xl shadow-sh-card">
                 <SelectItem value="light">Best Match</SelectItem>
                 <SelectItem value="dark">Dark</SelectItem>
                 <SelectItem value="system">System</SelectItem>
@@ -71,17 +77,11 @@ export default function ProductsPage() {
             </Select>
           </form>
           <form className="max-w-sm flex items-center h-full py-2 w-[180px] gap-x-2">
-            <label
-              htmlFor="sort"
-              className=" text-md font-JosefinRegular text-primarytext"
-            >
-              View
-            </label>
             <Select onValueChange={(value) => setSelectValue(value)}>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Card View" />
+              <SelectTrigger className="bg-white rounded-xl shadow-sh-card">
+                <SelectValue placeholder="View" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white rounded-xl shadow-sh-card">
                 <SelectItem value="grid-view">
                   <Text className="text-sm flex gap-x-2">
                     Grid View
@@ -99,119 +99,82 @@ export default function ProductsPage() {
           </form>
         </Flex>
       </Grid>
-      <Flex className="">
+      <Flex className="gap-x-10">
         <Flex direction="column" className="max-w-[20%] w-[20%] gap-y-10">
-          <Flex direction="column" className="space-y-2">
-            <Heading className="text-primarytext mb-5 underline underline-offset-8 text-[22px]">
-              Product Brand
-            </Heading>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-          </Flex>
-          <Flex direction="column" className="space-y-2">
-            <Heading className="text-primarytext mb-5 underline underline-offset-8 text-[22px]">
-              Discount Over
-            </Heading>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-          </Flex>
-          <Flex direction="column" className="space-y-2">
-            <Heading className="text-primarytext mb-5 underline underline-offset-8 text-[22px]">
-              Rating Item
-            </Heading>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-          </Flex>
-          <Flex direction="column" className="space-y-2">
-            <Heading className="text-primarytext mb-5 underline underline-offset-8 text-[22px]">
-              Category
-            </Heading>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-            <Flex gap={10} align="center">
-              <Checkbox id="terms1" className="text-white bg-subtext2" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-LatoRegular text-subtext2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Accept terms and conditions
-                </label>
-              </div>
-            </Flex>
-          </Flex>
+          <Accordion type="single" className="space-y-5" collapsible>
+            <AccordionItem
+              value="category"
+              className="bg-white shadow-sh-card rounded-xl px-4"
+            >
+              <AccordionTrigger className="text-lg font-medium">
+                Category
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid gap-2">
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />
+                    Clothing
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />
+                    Accessories
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />
+                    Electronics
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />
+                    Home & Garden
+                  </Label>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem
+              value="price"
+              className="bg-white shadow-sh-card rounded-xl px-4"
+            >
+              <AccordionTrigger className="text-lg font-medium">
+                Price
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid gap-4">
+                  <div className="flex items-center justify-between">
+                    <span>$0</span>
+                    <span>$100</span>
+                  </div>
+                  <Slider min={0} max={100} step={10} defaultValue={[0, 100]} />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem
+              value="rating"
+              className="bg-white shadow-sh-card rounded-xl px-4"
+            >
+              <AccordionTrigger className="text-lg font-medium">
+                Rating
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid gap-2">
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />4 stars and above
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />3 stars and above
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />2 stars and above
+                  </Label>
+                  <Label className="flex items-center gap-2 font-normal">
+                    <Checkbox />1 star and above
+                  </Label>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </Flex>
         <Grid
-          columns={selectValue === "grid-view" ? 5 : 1}
+          columns={selectValue === "grid-view" ? 4 : 1}
           gap={15}
           className="grid-flow-row w-[80%]"
         >
@@ -219,7 +182,7 @@ export default function ProductsPage() {
             products.length > 0 &&
             products.map((item, index) => {
               const Comp =
-                selectValue === "grid-view" ? ProductGridCard : ProductListCard;
+                selectValue === "grid-view" ? ProductCard : ProductListCard;
               return (
                 <Comp
                   // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>

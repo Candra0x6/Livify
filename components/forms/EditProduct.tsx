@@ -56,7 +56,7 @@ const formSchema = z.object({
       z.string(),
       z.object({
         url: z.string(),
-        file: z.instanceof(File),
+        file: z.any(),
         name: z.string(),
         size: z.number(),
         type: z.string(),
@@ -124,7 +124,7 @@ export const FileUpload = <T extends FieldValues>({
               <div key={index} className="relative w-[200px] h-[200px]">
                 <Button
                   type="button"
-                  className="z-10 absolute -top-3 -right-3 hover:bg-destructive bg-[#fcdede] rounded-full"
+                  className="z-10 absolute -top-3 -right-3 bg-destructive text-destructive-foreground rounded-full"
                   variant="destructive"
                   size="icon"
                   onClick={() => removeImage(index)}
@@ -139,7 +139,7 @@ export const FileUpload = <T extends FieldValues>({
               </div>
             ))}
         </div>
-        <Button className="bg-pink text-white relative w-40 ">
+        <Button className=" text-white relative w-40 ">
           <h1>Upload Image </h1>
           <Input
             id="dropzone-file"
@@ -229,15 +229,30 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 ">
         <FormField
           control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-medium font-heading">Images</FormLabel>
+
+              <FormControl>
+                <FileUpload control={form.control} name="images" />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-Poppins">Name</FormLabel>
+              <FormLabel className="font-medium font-heading">Name</FormLabel>
               <FormControl>
                 <Input
                   type="text"
                   id="name"
-                  className="text-sm border border-gray-300 text-subtext2 font-Poppins focus:ring-pink focus:ring-offset-1 block w-full font-normal"
+                  className="text-sm border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
                   {...field}
                 />
               </FormControl>
@@ -250,11 +265,13 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-Poppins">Description</FormLabel>
+              <FormLabel className="font-medium font-heading">
+                Description
+              </FormLabel>
               <FormControl>
                 <Textarea
-                  id="description"
-                  className="text-sm border border-gray-300 text-subtext2 font-Poppins focus:ring-pink focus:ring-offset-1 block w-full font-normal pb-10"
+                  id="desription"
+                  className="text-sm border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
                   {...field}
                 />
               </FormControl>
@@ -268,23 +285,28 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
             name="categoryId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-Poppins">Category</FormLabel>
+                <FormLabel className="font-medium font-heading">
+                  Category
+                </FormLabel>
                 <Select
                   value={field.value}
-                  onValueChange={(value: string) => field.onChange(value)}
+                  onValueChange={(value: typeof field.value) =>
+                    field.onChange(value)
+                  }
                 >
                   <FormControl>
-                    <SelectTrigger className="">
+                    <SelectTrigger className="text-sm border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 w-full rounded-md">
                       <SelectValue placeholder="Select a Category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-meta">
                     {category &&
                       category.categories.length > 0 &&
-                      category.categories.map((item) => (
+                      category.categories.map((item, i) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                         <SelectItem
                           key={item.id}
-                          className="hover:bg-gray-100 cursor-pointer"
+                          className="text-sm bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
                           value={item.id}
                         >
                           {item.name}
@@ -296,20 +318,63 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="price"
+            name="categoryId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-Poppins">Price</FormLabel>
+                <FormLabel className="font-medium font-heading">
+                  Color
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={(value: typeof field.value) =>
+                    field.onChange(value)
+                  }
+                >
+                  <FormControl>
+                    <SelectTrigger className="text-sm border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 w-full rounded-md">
+                      <SelectValue placeholder="Select a Category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-meta">
+                    {category &&
+                      category.categories.length > 0 &&
+                      category.categories.map((item, i) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+                        <SelectItem
+                          key={item.id}
+                          className="text-sm bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
+                          value={item.id}
+                        >
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-x-5">
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium font-heading">
+                  Stock
+                </FormLabel>
                 <FormControl>
                   <div className="relative flex items-center">
-                    <BiDollar className="absolute left-2 text-xl text-subtext3" />
+                    <Box className="absolute left-2 text-xl text-subtext3" />
                     <Input
                       type="number"
-                      id="price"
-                      placeholder="00.00"
-                      className="text-sm pl-7 border border-gray-300 text-subtext2 font-Poppins focus:ring-pink focus:ring-offset-1 block w-full font-normal"
+                      id="stock"
+                      placeholder="0"
+                      className="text-sm pl-9 border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
                       {...field}
                     />
                   </div>
@@ -320,18 +385,20 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
           />
           <FormField
             control={form.control}
-            name="stock"
+            name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-Poppins">Stock</FormLabel>
+                <FormLabel className="font-medium font-heading">
+                  Price
+                </FormLabel>
                 <FormControl>
                   <div className="relative flex items-center">
-                    <Box className="absolute left-2 text-xl text-subtext3" />
+                    <BiDollar className="absolute left-2 text-xl text-subtext3" />
                     <Input
                       type="number"
-                      id="stock"
-                      placeholder="0"
-                      className="text-sm pl-9 border border-gray-300 text-subtext2 font-Poppins focus:ring-pink focus:ring-offset-1 block w-full font-normal"
+                      id="price"
+                      placeholder="00.00"
+                      className="text-sm pl-8 border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
                       {...field}
                     />
                   </div>
@@ -341,24 +408,7 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="images"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-Poppins">Images</FormLabel>
-              <FormControl>
-                <FileUpload control={form.control} name="images" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          className="bg-pink text-white font-JosefinRegular w-full text-md"
-        >
+        <Button type="submit" className="font-medium w-full text-md">
           Submit
         </Button>
       </form>

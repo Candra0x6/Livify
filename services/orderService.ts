@@ -128,13 +128,22 @@ export async function getUserOrders(
 export async function getOrderById(
   prisma: PrismaClient,
   orderId: string,
-): Promise<{ orders: Order | null }> {
+): Promise<Order | null> {
   const order = await prisma.order.findFirst({
     where: { id: orderId },
     include: {
-      orderItems: true
+      orderItems: {
+        include: {
+          product: {
+            include: {
+              Category: true
+            }
+          }
+        }
+      }
+
     }
   });
 
-  return { orders: order }
+  return order
 }

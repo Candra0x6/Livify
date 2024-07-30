@@ -13,14 +13,15 @@ import { getSession } from "@/lib/auth/auth";
 import { signOut } from "@/utils/auth/auth";
 import { createClient } from "@/utils/supabase/client";
 import type { User } from "@prisma/client";
+import { UserIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { IconType } from "react-icons";
 import { CgProfile } from "react-icons/cg";
 import { IoLogInOutline } from "react-icons/io5";
 import { TbLayoutDashboard } from "react-icons/tb";
-import UserIcon from "../public/icons/user.svg";
 import UserDefaultAvatarProfile from "../public/images/user-default-avatar.png";
+import { Button } from "./ui/button";
 import { Text } from "./ui/text";
 
 export interface IconMenuListProps {
@@ -41,7 +42,7 @@ const accountMenuList: IconMenuListProps[] = [
   },
 ];
 
-export default function AuthButton({ user }: { user: User | null }) {
+export default function AuthButton(user: { user: User | undefined }) {
   const router = useRouter();
   const signOutAction = async () => {
     try {
@@ -57,21 +58,18 @@ export default function AuthButton({ user }: { user: User | null }) {
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="aspect-square rounded-full w-7 overflow-hidden bg-black"
-        >
-          <Image
-            src={UserDefaultAvatarProfile}
-            alt="user-default-avatar-profile "
-            className="w-full h-full"
-          />
-        </button>
+        <Button variant="ghost" size="icon" className="">
+          <div className="rounded-full bg-accent aspect-square w-10 p-0 flex items-center justify-center">
+            <UserIcon className="p-[2px]" />
+          </div>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-2 bg-white rounded-none">
-        <DropdownMenuLabel className="text-lg">{user.name}</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-lg">
+          {user?.user?.name}
+        </DropdownMenuLabel>
         <DropdownMenuLabel className="text-subtext2 -mt-3">
-          {user.email}
+          {user?.user?.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup className=" ">
@@ -83,7 +81,7 @@ export default function AuthButton({ user }: { user: User | null }) {
               className="gap-x-2 flex items-center"
             >
               <menu.icon className="text-lg" />
-              <span>{menu.name}</span>
+              <span>{menu?.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
@@ -105,7 +103,6 @@ export default function AuthButton({ user }: { user: User | null }) {
       className="flex gap-x-2 items-center"
     >
       <Text className="text-white font-JosefinSemibold text-md ">Login</Text>
-      <Image src={UserIcon} alt="heart-icon" className="w-4" />
     </button>
   );
 }

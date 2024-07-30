@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,26 +16,19 @@ export const NewProductDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-pink text-white font-Poppins flex"
-        >
-          <IoAdd className="text-white text-2xl mr-2" />
-          New Product{" "}
+        <Button size="icon" className=" text-white p-0 aspect-square">
+          <IoAdd className="text-white text-2xl p-0" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[100vh] duration-300 transition-all ">
         <DialogHeader>
-          <DialogTitle>Make a Product</DialogTitle>
+          <DialogTitle className="text-2xl">Create New Product</DialogTitle>
           <DialogDescription>
             Add product to your store fill form below. Click add when you're
             done.
           </DialogDescription>
         </DialogHeader>
         <AddProductForm />
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,11 +1,14 @@
+import SectionHeader from "@/components/SectionHeader";
+import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import Products from "./page";
 
 export default function ProductsLayout() {
   return (
-    <>
-      <Heading className="text-primarytext mb-10">Products</Heading>
+    <main>
+      <SectionHeader title="Products" description="Store Products Data" />
+
       <Products />
-    </>
+    </main>
   );
 }
