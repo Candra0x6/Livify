@@ -10,7 +10,12 @@ import { Text } from "../ui/text";
 
 const Footer: FC = () => {
   return (
-    <footer className="bg-[#EEEFFB] w-full mt-44">Make with lovely</footer>
+    <footer className="bg-white w-full p-10 text-center xl:text-base text-sm mt-40">
+      <h1>
+        © 2024 Kurniawan Candra Mahardika. Yo, this is our vibe—no jacking our
+        swag, fam! 🗣💯🔥
+      </h1>
+    </footer>
   );
 };
 
