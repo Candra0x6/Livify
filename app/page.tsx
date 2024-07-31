@@ -1,6 +1,7 @@
 "use client";
 import InfiniteSlider from "@/components/InfinitySilder";
 import SectionHeader from "@/components/SectionHeader";
+import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Product } from "@prisma/client";
+import type { Category, Product } from "@prisma/client";
 import { Bed, Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import dots from "../public/svg/patternn.svg";
 
 export default function RootPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [category, setCategory] = useState<Category[]>([]);
   useEffect(() => {
     const getProducts = async () => {
       const res = await fetch(
@@ -33,7 +35,17 @@ export default function RootPage() {
 
       setProducts(data.products);
     };
-
+    const getCaregory = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/category`,
+        {
+          method: "GET",
+        }
+      );
+      const body = await res.json();
+      setCategory(body.categories);
+    };
+    getCaregory();
     getProducts();
   }, []);
   return (
@@ -82,44 +94,50 @@ export default function RootPage() {
           </div>
         </div>
       </section>
-      <section className="">
+      <section id="#category" className="">
         <SectionHeader
           title="Explore Category"
           description="Find the perfect product effortlessly."
           navigate="See All Category"
+          href="/products"
         />
-        <div className="grid grid-cols-4 gap-x-6">
-          <Card className="relative flex h-[8rem] w-full overflow-hidden rounded-lg shadow-lg border hover:shadow-2xl transition-all duration-300 group p-4 bg-white hover:bg-meta ">
-            <CardHeader>
-              <Image src={tes} alt="category" className="w-20 " />
-            </CardHeader>
-            <CardContent className="space-y-1.5">
-              <CardTitle className="capitalize text-primary font-semibold text-2xl ">
-                aok
-              </CardTitle>
-              <CardDescription className="">Show bed category</CardDescription>
-            </CardContent>
-          </Card>
-          <Card className="relative flex h-[8rem] w-full overflow-hidden rounded-lg bg-transition-colors group hover:bg-primary p-4 ">
-            <CardHeader>
-              <Image src={tes} alt="category" className="w-20 " />
-            </CardHeader>
-            <CardContent className="space-y-1.5">
-              <CardTitle className="capitalize text-primary font-semibold text-2xl ">
-                aok
-              </CardTitle>
-              <CardDescription className="">Show bed category</CardDescription>
-            </CardContent>
-          </Card>
+        <div className="grid lg:grid-cols-5 sm:grid-cols-4 grid-cols-3 sm:gap-5 gap-2">
+          {category &&
+            category.length > 0 &&
+            category.map((item, id) => <CategoryCard key={id} data={item} />)}
         </div>
       </section>
       <section className="mt-36">
         <SectionHeader
-          title="Today's Hot Deals"
+          title="Just For You"
           description="Save big on top items."
           navigate="See All Products"
         />
-        <div className="grid grid-cols-4 mt-12 gap-6">
+        <div className="grid grid-cols-5 mt-12 gap-6">
+          {products &&
+            products.length > 0 &&
+            products.map((item, i) => (
+              <ProductCard
+                key={i}
+                name="Vitae Supandes"
+                image={item.images[0]}
+                price={30.212}
+                color={[""]}
+                description="Lorem ipsum dolor sit amet, consectetur adip non proident et non proident et et et et et et et et et et et et et et et et"
+                productId={item.id}
+                slug={item.slug}
+                storeId={item.storeId}
+              />
+            ))}
+        </div>
+      </section>
+      <section className="mt-36">
+        <SectionHeader
+          title="Trending Product"
+          description="Best product worth to buy."
+          navigate="See All Products"
+        />
+        <div className="grid grid-cols-5 mt-12 gap-6">
           {products &&
             products.length > 0 &&
             products.map((item, i) => (
