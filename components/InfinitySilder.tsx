@@ -48,17 +48,17 @@ const InfiniteSlider = ({ rtl }: { rtl: boolean }) => {
       <div className="relative z-0">
         <Slider {...settings}>
           <div className="px-2">
-            <div className="bg-blue-500 h-[21rem] w-[15.5rem] rounded-lg flex items-center justify-center text-white text-2xl">
+            <div className="bg-blue-500 w-full lg:h-[21rem] h-[15rem] rounded-lg flex items-center justify-center text-white text-2xl">
               Slide 1
             </div>
           </div>
           <div className="px-2">
-            <div className="bg-green-500 h-[21rem] w-[15.5rem] rounded-lg flex items-center justify-center text-white text-2xl">
+            <div className="bg-green-500 lg:h-[21rem] h-[15rem] w-full rounded-lg flex items-center justify-center text-white text-2xl">
               Slide 2
             </div>
           </div>
           <div className="px-2">
-            <div className="bg-red-500 h-[21rem] w-[15.5rem] rounded-lg flex items-center justify-center text-white text-2xl">
+            <div className="bg-red-500 lg:h-[21rem] h-[15rem] w-full rounded-lg flex items-center justify-center text-white text-2xl">
               Slide 3
             </div>
           </div>
