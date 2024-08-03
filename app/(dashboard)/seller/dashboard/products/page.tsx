@@ -78,25 +78,27 @@ export default function Products() {
   }, []);
   return (
     <>
-      {!products && (
-        <div className="w-full mb-5 h-[20vh] rounded-md bg-white shadow-sh-card">
-          <div className="flex justify-between w-full h-full p-10">
+      {products && (
+        <div className="w-full mb-5 lg:h-[20vh] h-[14vh] rounded-md bg-white shadow-sh-card">
+          <div className="flex justify-between w-full h-full lg:p-10 p-5">
             <div className="">
-              <h1 className="text-2xl font-semibold">
+              <h1 className="lg:text-2xl md:text-lg text-md font-semibold">
                 Create your first product
               </h1>
-              <span className="text-md text-textSecondary">
+              <span className="md:text-md md:text-sm text-xs text-textSecondary">
                 Make first product for your store
               </span>
             </div>
             <div className="h-full flex items-center">
-              <Button className="px-10">Create Product</Button>
+              <Button className="lg:px-10 lg:text-md text-sm">
+                Create Product
+              </Button>
             </div>
           </div>
         </div>
       )}
       <div className="flex w-full justify-between mb-5">
-        <div className="flex gap-x-3">
+        <div className=" gap-x-3 lg:flex hidden">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -150,8 +152,8 @@ export default function Products() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex gap-x-2">
-          <div className="w-[230px] flex bg-white shadow-sh-card hover:bg-accent/80 items-center rounded-md h-10">
+        <div className="flex gap-x-2 w-full justify-end">
+          <div className="lg:w-[230px] w-full flex bg-white shadow-sh-card hover:bg-accent/80 items-center rounded-md h-10">
             <div className="p-4 flex items-center justify-between w-full ">
               <Button variant="ghost" className=" rounded-none text-white p-0">
                 <CiSearch className="text-2xl text-foreground" />
@@ -166,21 +168,6 @@ export default function Products() {
         </div>
       </div>
       <Table className="bg-white shadow-sh-card p-10 rounded-lg">
-        <TableCaption>
-          <div className="flex w-full justify-between pb-10">
-            <div className="">
-              <Text className=" text-sm">Showing 1-9 of 78</Text>
-            </div>
-            <div className="flex gap-x-2">
-              <Button variant="secondary" size="sm">
-                Previous
-              </Button>
-              <Button variant="secondary" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
-        </TableCaption>
         <TableHeader>
           <TableRow className="text-[15px]">
             <TableHead className="w-28">Image</TableHead>
@@ -229,6 +216,19 @@ export default function Products() {
           )}
         </TableBody>
       </Table>
+      <div className="flex w-full justify-between pb-10 mt-10">
+        <div className="">
+          <Text className=" text-sm">Showing 1-9 of 78</Text>
+        </div>
+        <div className="flex gap-x-2">
+          <Button variant="secondary" size="sm">
+            Previous
+          </Button>
+          <Button variant="secondary" size="sm">
+            Next
+          </Button>
+        </div>
+      </div>
     </>
   );
 }
