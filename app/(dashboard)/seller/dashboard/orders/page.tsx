@@ -130,7 +130,7 @@ function Orders() {
   return (
     <>
       <div className="flex w-full justify-between mb-5">
-        <div className="flex gap-x-3">
+        <div className=" gap-x-3 lg:flex hidden">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -199,8 +199,8 @@ function Orders() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex gap-x-2">
-          <div className="w-[230px] flex bg-white shadow-sh-card  hover:bg-accent/80 items-center rounded-md h-10">
+        <div className="flex gap-x-2 w-full justify-end">
+          <div className="lg:w-[230px] w-full flex bg-white shadow-sh-card  hover:bg-accent/80 items-center rounded-md h-10">
             <div className="p-4 flex items-center justify-between w-full">
               <Button variant="ghost" className=" rounded-none text-white p-0">
                 <CiSearch className="text-2xl text-foreground" />
@@ -214,21 +214,6 @@ function Orders() {
         </div>
       </div>
       <Table className="bg-white shadow-sh-card p-10 rounded-lg">
-        <TableCaption>
-          <div className="flex w-full justify-between pb-10">
-            <div className="">
-              <Text className=" text-sm">Showing 1-9 of 78</Text>
-            </div>
-            <div className="flex gap-x-2">
-              <Button variant="secondary" size="sm">
-                Previous
-              </Button>
-              <Button variant="secondary" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
-        </TableCaption>
         <TableHeader>
           <TableRow className=" text-[15px] ">
             <TableHead className="w-[4%]">Id</TableHead>
@@ -287,6 +272,19 @@ function Orders() {
             ))}
         </TableBody>
       </Table>
+      <div className="flex w-full justify-between py-10">
+        <div className="">
+          <Text className=" text-sm">Showing 1-9 of 78</Text>
+        </div>
+        <div className="flex gap-x-2">
+          <Button variant="secondary" size="sm">
+            Previous
+          </Button>
+          <Button variant="secondary" size="sm">
+            Next
+          </Button>
+        </div>
+      </div>
     </>
   );
 }
