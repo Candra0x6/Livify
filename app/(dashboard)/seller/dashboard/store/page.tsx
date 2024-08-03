@@ -69,7 +69,7 @@ export default function StorePage() {
         }
       />
       <div className="bg-white shadow-sh-card w-full rounded-xl mt-10">
-        <div className="px-40 py-20">
+        <div className="xl:px-40 xl:py-20 lg:px-30 lg:py-20 md:px-20 md:py-10 px-14 py-5">
           {data.quantity ? (
             <EditStoreForm store={store?.store as Store} />
           ) : (
