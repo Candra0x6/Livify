@@ -59,48 +59,48 @@ export const ProductCard: FC<ProductDetailsProps> = ({
     console.log(result);
   };
   return (
-    <div className="group/card shadow-lg border hover:shadow-2xl duration-300 transition-all rounded-2xl space-y-4 h-full p-4 bg-white hover:bg-meta">
+    <div className="group/card shadow-lg border hover:shadow-2xl duration-300 transition-all rounded-2xl space-y-4 h-full md:p-4 p-2 bg-white hover:bg-meta">
       {/* Images and Actions */}
       <div className="aspect-square rounded-2xl bg-gray-100 relative w-full">
         <Button
           size="icon"
           variant="secondary"
-          className="p-0 rounded-full aspect-square absolute m-2 right-0 w-10"
+          className="p-0 rounded-full aspect-square absolute sm:m-2 m-1 right-0 md:w-10 md:h-10 w-8 h-8"
           onClick={() => addWishlist({ storeId, productId })}
         >
-          <Heart className="p-[2px]" />
+          <Heart className="md:p-[2px] md:w-10 w-4 p-0" />
         </Button>
         <img
           // @ts-ignore
           src={image}
-          fill
           sizes="200"
-          // @ts-ignore
           alt={name}
           className="aspect-square object-fill rounded-2xl w-full h-full"
         />
       </div>
       <div className="space-y-3">
         <div className="flex justify-between">
-          <h1 className="capitalize text-foreground font-medium text-xl">
-            Lervlio Chair
+          <h1 className="capitalize text-foreground font-medium md:text-xl text-sm">
+            {name}
           </h1>
           <div className="flex items-center gap-x-1">
-            <FaStar size="20px" color="#f8ed24" />
-            <span>4.5</span>
+            <FaStar color="#f8ed24" className="md:w-5 w-3" />
+            <span className="md:text-base text-xs">4.5</span>
           </div>
         </div>
 
-        <span>Chair</span>
+        <span className="md:text-base text-xs">Chair</span>
         <div className="flex justify-between">
-          <span className="text-primary font-bold text-xl">$36.21</span>
+          <span className="text-primary font-bold md:text-xl text-md">
+            ${price}
+          </span>
           <Button
             size="icon"
             variant="secondary"
-            className="p-0 rounded-full aspect-square w-10"
+            className="p-0 rounded-full aspect-square md:w-10 md:h-10 w-8 h-8"
             onClick={() => addCart({ storeId, productId, quantity: 1 })}
           >
-            <ShoppingCart className="p-[2px]" />
+            <ShoppingCart className="md:p-[2px] md:w-10 w-4 p-0 " />
           </Button>
         </div>
       </div>
