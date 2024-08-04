@@ -42,8 +42,8 @@ function Cart() {
   return (
     <div className="container mx-auto mt-36 ">
       <SectionHeader title="Cart Products" description="See all your cart" />
-      <div className="flex space-x-5 mt-10">
-        <div className=" max-w-[60%] w-full">
+      <div className="lg:flex lg:space-x-5 lg:space-y-0 space-y-20 mt-10">
+        <div className=" lg:max-w-[60%] sm:w-full">
           <div className="space-y-6 w-full">
             {cart &&
               cart.length > 0 &&
@@ -62,7 +62,7 @@ function Cart() {
               ))}
           </div>
         </div>
-        <div className="max-w-[40%] bg-white w-full rounded-xl shadow-sh-card">
+        <div className="lg:max-w-[40%] bg-white sm:w-full rounded-xl shadow-sh-card">
           <div className="w-full h-full flex flex-col p-4 sm:px-6 justify-between">
             <div className="flex flex-col">
               <h1 className="font-semibold text-2xl border-b-[1px] border-accent pb-2">
