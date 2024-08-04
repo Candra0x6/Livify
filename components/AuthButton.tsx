@@ -58,10 +58,12 @@ export default function AuthButton(user: { user: User | undefined }) {
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="">
-          <div className="rounded-full bg-accent aspect-square w-10 p-0 flex items-center justify-center">
-            <UserIcon className="p-[2px]" />
-          </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full bg-accent hover:bg-accent/80 aspect-square w-10 p-0"
+        >
+          <UserIcon className="p-[2px]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-2 bg-white rounded-none">
