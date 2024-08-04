@@ -30,6 +30,7 @@ import React, { useEffect, useState } from "react";
 import GridIcon from "../../public/icons/grid-view.svg";
 import ListIcon from "../../public/icons/list-view.svg";
 
+import { FilterElement, MobileFilter } from "@/components/Filter";
 import { getSession } from "@/lib/auth/auth";
 import type { deleteWishlistBody } from "../api/v1/user/[userId]/wishlist/[wishlistId]/delete/route";
 
@@ -74,31 +75,29 @@ export default function WishlistPage() {
   };
   return (
     <ContainerLayout>
-      <Grid
-        columns={2}
-        rows={1}
-        className="w-full place-content-start my-10 mt-36"
-      >
+      <Grid className="w-full  place-content-start sm:my-10 sm:mt-32 mt-36 md:grid-cols-2 md:grid-rows-1 grid-rows-2 grid-cols-1">
         <Flex direction="column">
           <SectionHeader
-            title="All Wishlist"
-            description="About 201 Product Wishlisted"
+            title="Explore All Products"
+            description="About 201 Product"
           />
         </Flex>
-        <Flex className="w-full" justify="flex-end" align="center" gap={30}>
-          <form className="max-w-sm flex items-center h-full py-2 w-[180px] gap-x-2">
+        <div className="w-full md:gap-10 flex gap-x-2">
+          <div className="md:hidden flex items-center">
+            <MobileFilter />
+          </div>
+          <form className="max-w-sm flex items-center h-full py-2 md:w-[180px] w-full gap-x-2 ">
             <Select>
               <SelectTrigger className="bg-white rounded-xl shadow-sh-card">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="List" />
               </SelectTrigger>
               <SelectContent className="bg-white rounded-xl shadow-sh-card">
-                <SelectItem value="light">Best Match</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="light">Esc</SelectItem>
+                <SelectItem value="dark">Desc</SelectItem>
               </SelectContent>
             </Select>
           </form>
-          <form className="max-w-sm flex items-center h-full py-2 w-[180px] gap-x-2">
+          <form className="max-w-sm flex items-center h-full py-2 md:w-[180px] w-full gap-x-2">
             <Select onValueChange={(value) => setSelectValue(value)}>
               <SelectTrigger className="bg-white rounded-xl shadow-sh-card">
                 <SelectValue placeholder="View" />
@@ -119,87 +118,23 @@ export default function WishlistPage() {
               </SelectContent>
             </Select>
           </form>
-        </Flex>
+        </div>
       </Grid>
       <Flex className="gap-x-10">
-        <Flex direction="column" className="max-w-[20%] w-[20%] gap-y-10">
-          <Accordion type="single" className="space-y-5" collapsible>
-            <AccordionItem
-              value="category"
-              className="bg-white shadow-sh-card rounded-xl px-4"
-            >
-              <AccordionTrigger className="text-lg font-medium">
-                Category
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="grid gap-2">
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />
-                    Clothing
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />
-                    Accessories
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />
-                    Electronics
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />
-                    Home & Garden
-                  </Label>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem
-              value="price"
-              className="bg-white shadow-sh-card rounded-xl px-4"
-            >
-              <AccordionTrigger className="text-lg font-medium">
-                Price
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <span>$0</span>
-                    <span>$100</span>
-                  </div>
-                  <Slider min={0} max={100} step={10} defaultValue={[0, 100]} />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem
-              value="rating"
-              className="bg-white shadow-sh-card rounded-xl px-4"
-            >
-              <AccordionTrigger className="text-lg font-medium">
-                Rating
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="grid gap-2">
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />4 stars and above
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />3 stars and above
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />2 stars and above
-                  </Label>
-                  <Label className="flex items-center gap-2 font-normal">
-                    <Checkbox />1 star and above
-                  </Label>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+        <Flex
+          direction="column"
+          className="md:max-w-[20%] md:w-[20%] md:flex-col md:flex hidden gap-y-10"
+        >
+          <FilterElement />
         </Flex>
         <Grid
-          columns={selectValue === "grid-view" ? 4 : 1}
-          gap={15}
-          className="grid-flow-row w-[80%]"
+          className={`grid-flow-row md:w-[80%] w-full ${
+            selectValue === "grid-view"
+              ? "xl:grid-cols-4 xl:gap-15 sm:grid-cols-3 md:gap-3 grid-cols-2 md:mt-0 xl:gap-6 gap-2"
+              : "grid-cols-1 lg:gap-y-5 gap-y-2"
+          }`}
         >
+          {" "}
           {wishlist &&
             wishlist.length > 0 &&
             wishlist.map((item, index) => {
