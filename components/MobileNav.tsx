@@ -49,8 +49,19 @@ export const MobileNav: FC = (): ReactNode => {
               defaultValue={["item-1", "item-2", "item-3"]}
               className="w-full"
             >
+              <AccordionItem value="item-1" className="md:hidden">
+                <AccordionTrigger>Dashboard</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-y-2 text-muted-foreground">
+                    <Link href="/seller/dashboard">Dashboard</Link>
+                    <Link href="/seller/dashboard/products">Products</Link>
+                    <Link href="/seller/dashboard/orders">Orders</Link>
+                    <Link href="/seller/dashboard/store">Store</Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
               <AccordionItem value="item-2">
-                <AccordionTrigger>Lobby</AccordionTrigger>
+                <AccordionTrigger>Main</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-y-2 text-muted-foreground">
                     <Link href="/">Home</Link>
