@@ -1,11 +1,17 @@
 "use client";
 
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import Image from "next/image";
+import {
+  usePathname,
+  useRouter,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { BiBox } from "react-icons/bi";
 import { LuClipboardList } from "react-icons/lu";
 import { MdOutlineStorefront } from "react-icons/md";
 import { TbLayoutDashboard } from "react-icons/tb";
+import logo from "../../public/svg/logo.svg";
 
 interface IconMenuListProps {
   name: string;
@@ -22,36 +28,45 @@ const DashboardMenuList: SidebarNavigation[] = [
   {
     id: 0,
     name: "Dashboard",
-    href: "/seller/dashboard",
+    href: "/seller/dashboard/store",
     icon: TbLayoutDashboard,
     segment: null,
   },
   {
     id: 1,
     name: "Products",
-    href: "/seller/dashboard/products",
+    href: "/seller/dashboard/store/products",
     icon: BiBox,
     segment: "products",
   },
   {
     id: 2,
     name: "Order Lists",
-    href: "/seller/dashboard/orders",
+    href: "/seller/dashboard/store/orders",
     icon: LuClipboardList,
     segment: "orders",
   },
   {
     id: 3,
     name: "Store",
-    href: "/seller/dashboard/store",
+    href: "/seller/dashboard/store/profile",
     icon: MdOutlineStorefront,
     segment: "store",
   },
 ];
-
+const DashboardPurcesList = [
+  {
+    id: 0,
+    name: "Orders",
+    href: "/customer/dashboard/orders",
+    icon: LuClipboardList,
+    segment: "purches",
+  },
+];
 const SidebarNav: React.FC = () => {
   const router = useRouter();
   const segment = useSelectedLayoutSegment();
+  const path = usePathname();
   const [indicatorStyle, setIndicatorStyle] = useState({});
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -89,9 +104,15 @@ const SidebarNav: React.FC = () => {
   }, [segment]);
 
   return (
-    <aside className="w-full h-full pt-3 bg-white shadow-sh-card rounded-lg relative">
+    <div className="w-full h-full pt-3 bg-white shadow-sh-card rounded-lg relative md:flex md:flex-col hidden">
+      <div className="hidden md:flex mx-auto w-[80%]">
+        <Image src={logo} alt="Livify." className="w-full" />
+      </div>
       <div className="grid grid-rows-4 w-full relative" ref={navRef}>
-        {DashboardMenuList.map((menu) => (
+        {(path.includes("/seller/dashboard/store")
+          ? DashboardMenuList
+          : DashboardPurcesList
+        ).map((menu) => (
           <div
             key={menu.id}
             className="px-3 py-1 w-full h-full flex relative items-center"
@@ -122,7 +143,7 @@ const SidebarNav: React.FC = () => {
           style={indicatorStyle}
         />
       </div>
-    </aside>
+    </div>
   );
 };
 
