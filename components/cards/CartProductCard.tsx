@@ -4,6 +4,7 @@ import {
 } from "@/app/products/(route)/[storeId]/[productSlug]/page";
 import type { CartItem, Product } from "@prisma/client";
 import { MinusIcon, PlusIcon } from "lucide-react";
+import Image from "next/image";
 import type { FC } from "react";
 import { FaStar } from "react-icons/fa6";
 import { FiHeart } from "react-icons/fi";
@@ -129,46 +130,47 @@ export const CartDetailsCard: FC<CartDetailsProps> = ({
     }
   };
   return (
-    <div className="group/card border duration-300 transition-all w-full h-[20vh] group cursor-pointer relative overflow-hidden flex gap-x-10 bg-white shadow-sh-card rounded-xl p-4">
-      <div className="relative bg-[#F6F7FB] w-[15rem] aspect-square">
+    <div className="group/card border duration-300 transition-all sm:w-full sm:h-full h-[150px] group cursor-pointer relative overflow-hidden flex sm:gap-x-10 gap-x-5 bg-white shadow-sh-card rounded-xl sm:p-4 p-3">
+      <div className="relative bg-[#F6F7FB] md:w-36 md:h-36 w-[7.8rem] h-[7.8rem]  aspect-square">
         <img
+          fill
           src={image}
           alt="l"
           className="w-full h-full aspect-square rounded-xl"
         />
       </div>
-      <div className=" space-y-2 w-full">
-        <div className="mb-5">
+      <div className=" sm:space-y-2 space-y-7 w-full">
+        <div className="sm:mb-5">
           <Flex justify="space-between" align="center">
             <div className="w-full">
               <div className="flex w-full justify-between">
-                <h1 className="text-2xl font-semibold">{name} </h1>
+                <h1 className="sm:text-2xl text-lg font-semibold">{name} </h1>
                 <Button
                   variant="destructive"
-                  className="p-0 aspect-square rounded-full w-10"
+                  className="p-0 aspect-square rounded-full sm:w-10 sm:h-10 w-6 h-6"
                 >
-                  <IoClose className="text-2xl" />
+                  <IoClose className="sm:text-2xl text-md" />
                 </Button>
               </div>
-              <span>Chair</span>
+              <span className="sm:text-base text-sm">Chair</span>
             </div>
           </Flex>
           <Flex className="gap-x-2">
             <div className="flex items-center gap-x-1">
-              <FaStar size="20px" color="#f8ed24" />
-              <span>4.5</span>
+              <FaStar color="#f8ed24" className="sm:w-[20px] w-[15px]" />
+              <span className="text-sm">4.5</span>
             </div>
           </Flex>
         </div>
         <div className="w-full flex justify-between ">
-          <span className="text-primary font-bold text-xl  items-end flex">
+          <span className="text-primary font-bold sm:text-xl text-md items-end flex">
             $36.21
           </span>
           <div className="flex gap-x-2 items-center">
             <Button
               size="icon"
               variant="default"
-              className="p-0 aspect-square w-10"
+              className="p-0 aspect-square sm:w-10 sm:h-10 w-6 h-6"
             >
               <PlusIcon className="p-[2px]" />
             </Button>
@@ -176,7 +178,7 @@ export const CartDetailsCard: FC<CartDetailsProps> = ({
             <Button
               size="icon"
               variant="default"
-              className="p-0 aspect-square w-10"
+              className="p-0 aspect-square sm:h-10 sm:w-10 w-6 h-6"
             >
               {" "}
               <MinusIcon className="p-[2px]" />
