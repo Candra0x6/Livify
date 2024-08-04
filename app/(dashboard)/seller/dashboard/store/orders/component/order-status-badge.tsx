@@ -2,7 +2,7 @@ import React from "react";
 
 export function Success({ status }: { status: string }) {
   return (
-    <div className="p-2 bg-green-100 text-center text-green-600 text-xs rounded-md font-medium">
+    <div className="p-2 bg-green-100 h-8 text-center text-green-600 text-xs rounded-md font-medium">
       <h1>{status}</h1>
     </div>
   );

@@ -1,81 +1,84 @@
-"use client";
 import SectionHeader from "@/components/SectionHeader";
-import { AddStoreForm } from "@/components/forms/AddStoreForm";
-import { CreateStoreForm } from "@/components/forms/CreateStoreForm";
-import { EditStore } from "@/components/forms/EditStore";
-import { EditStoreForm } from "@/components/forms/EditStoreForm";
+import { DashboardDetailCard } from "@/components/cards/DashboardDetailCard";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
-import { getSession } from "@/lib/auth/auth";
-import type { Store } from "@prisma/client";
-import { useSelectedLayoutSegment } from "next/navigation";
-import { useEffect, useState } from "react";
-interface storeStatus {
-  quantity: boolean;
-  storeId: string | null;
+import { Text } from "@/components/ui/text";
+import { User } from "lucide-react";
+import Image from "next/image";
+import TOrderIcon from "../../../../../public/icons/TOrderIcon.svg";
+import TPendingIcon from "../../../../../public/icons/TPendingIcon.svg";
+import TSalesIcon from "../../../../../public/icons/TSalesIcon.svg";
+import TUSerIcon from "../../../../../public/icons/TUserIcon.svg";
+
+const MetricCardData: MetricDataType[] = [
+  {
+    id: 0,
+    title: "Total User",
+    Icon: TUSerIcon,
+    alt: "total-user-icon",
+    value: 20,
+  },
+  {
+    id: 1,
+    title: "Total Order",
+    Icon: TOrderIcon,
+    alt: "total-order-icon",
+    value: 20,
+  },
+  {
+    id: 2,
+    title: "Total Sales",
+    Icon: TSalesIcon,
+    alt: "total-sales-icon",
+    value: 20,
+  },
+  {
+    id: 3,
+    title: "Total Pending",
+    Icon: TPendingIcon,
+    alt: "total-pending-icon",
+    value: 20,
+  },
+];
+
+export interface MetricDataType {
+  id: number;
+  title: string;
+  Icon: string; // Assuming the Icon is a functional component
+  alt: string;
+  value: number;
 }
-export default function StorePage() {
-  const [data, setData] = useState<storeStatus>({
-    quantity: false,
-    storeId: null,
-  });
-  const [store, setStore] = useState<{ store: Store }>();
-
-  useEffect(() => {
-    const IsAlreadyHaveStore = async () => {
-      const session = await getSession();
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/${session?.userId}/store`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await response.json();
-      setData({
-        quantity: data.store.quantity,
-        storeId: data.store.storeId,
-      });
-    };
-    const store = async (storeId: string) => {
-      const res = fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}`,
-        {
-          method: "GET",
-        }
-      );
-      const data = (await res).json();
-      setStore(await data);
-    };
-    const fetchSession = async () => {
-      try {
-        const session = await getSession();
-        await store(session?.storeId as string);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    fetchSession();
-    IsAlreadyHaveStore();
-  }, []);
-
+export default async function Dashboard() {
   return (
-    <div>
-      <SectionHeader
-        title={data.quantity ? "Edit Store" : "Create Store"}
-        description={
-          data.quantity
-            ? "Edit Yout store by fill fields"
-            : "Create Store by fill fields"
-        }
-      />
-      <div className="bg-white shadow-sh-card w-full rounded-xl mt-10">
-        <div className="xl:px-40 xl:py-20 lg:px-30 lg:py-20 md:px-20 md:py-10 px-14 py-5">
-          {data.quantity ? (
-            <EditStoreForm store={store?.store as Store} />
-          ) : (
-            <CreateStoreForm />
-          )}
-        </div>
+    <div className="">
+      <SectionHeader title="Dashboard" description="Show up your store stats" />
+      <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 w-full xl:gap-x-10 md:gap-5 xl:gap-y-0 gap-y-5 mt-2">
+        {MetricCardData.map((item, i) => (
+          <DashboardDetailCard
+            key={item.id}
+            id={item.id}
+            Icon={item.Icon}
+            alt={item.alt}
+            title={item.title}
+            value={item.value}
+          />
+        ))}
+      </div>
+      <div className="mt-10">
+        <Card className="bg-white p-4 rounded-lg space-y-5 w-full">
+          <CardHeader className="flex items-center justify-between w-full">
+            <CardTitle className="font-medium text-2xl">Sales Detail</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="text-4xl font-bold">chart</div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
