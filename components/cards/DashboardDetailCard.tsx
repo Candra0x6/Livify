@@ -1,4 +1,4 @@
-import type { MetricDataType } from "@/app/(dashboard)/seller/dashboard/page";
+import type { MetricDataType } from "@/app/(dashboard)/seller/dashboard/store/page";
 import { ArrowUpIcon } from "lucide-react";
 import Image from "next/image";
 import React, { type FC } from "react";
