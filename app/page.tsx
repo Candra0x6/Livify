@@ -1,49 +1,43 @@
-"use client";
-import InfiniteSlider, {
-  MarqueeDemoVertical,
-} from "@/components/InfinitySilder";
+"use server";
+
+import { MarqueeVertical } from "@/components/ReviewShow";
 import SectionHeader from "@/components/SectionHeader";
 import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
-import AnimatedShinyText from "@/components/magicui/animated-shiny-text";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Category, Product } from "@prisma/client";
-import { ArrowRightIcon, ChevronRight } from "lucide-react";
-
-import { useEffect, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { FaArrowRightLong, FaGithub, FaStar } from "react-icons/fa6";
-import { FiGithub } from "react-icons/fi";
 
-export default function RootPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [category, setCategory] = useState<Category[]>([]);
-  useEffect(() => {
-    const getProducts = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await res.json();
+export async function getProducts() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product`,
+    {
+      method: "GET",
+    }
+  );
+  const data = await res.json();
 
-      setProducts(data.products);
-    };
-    const getCaregory = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/category`,
-        {
-          method: "GET",
-        }
-      );
-      const body = await res.json();
-      setCategory(body.categories);
-    };
-    getCaregory();
-    getProducts();
-  }, []);
+  return data.products;
+}
+
+export async function getCategory() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/category`,
+    {
+      method: "GET",
+    }
+  );
+  const body = await res.json();
+  return body.categories;
+}
+
+export default async function RootPage() {
+  const products: Product[] = await getProducts();
+  const category: Category[] = await getCategory();
+  console.log(products);
   return (
     <div className="container mx-auto">
       <section className="bg-gradient-to-b from-transparent to-background items-center relative overflow-hidden">
@@ -90,7 +84,7 @@ export default function RootPage() {
               </Button>
             </div>
             <div className="md:max-w-[40%] md:min-w-[30%] w-full h-full flex items-start relative">
-              <MarqueeDemoVertical />
+              <MarqueeVertical />
             </div>
           </div>
         </div>
@@ -145,7 +139,7 @@ export default function RootPage() {
               <ProductCard
                 key={i}
                 name="Vitae Supandes"
-                image={item.images[0]}
+                image={item.images[0] as string}
                 price={30.212}
                 color={[""]}
                 description="Lorem ipsum dolor sit amet, consectetur adip non proident et non proident et et et et et et et et et et et et et et et et"

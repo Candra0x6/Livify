@@ -39,7 +39,6 @@ export default async function RootLayout({
 }) {
   const session = await getSession();
   const refresh = await getRefresh();
-  console.log(refresh);
   let user: { user: User } | null = null;
   if (session?.userId) {
     const res = await getUserDetail(session.userId);
@@ -48,15 +47,15 @@ export default async function RootLayout({
   console.log(user);
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
-      <body>
+      <body className="relative bg-background">
         <RefreshHandler
           initialSession={session as sessionEror}
           refreshToken={refresh as RefreshSession}
         />
-        <header>
+        <header className="w-full bg-black">
           <Navbar user={user?.user} />
         </header>
-        {children}
+        <main>{children}</main>
         <Footer />
       </body>
     </html>
