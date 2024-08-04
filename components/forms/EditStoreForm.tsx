@@ -1,5 +1,5 @@
 "use client";
-import { DeleteStoreDialog } from "@/app/(dashboard)/seller/dashboard/store/component/DeleteButton";
+import { DeleteStoreDialog } from "@/app/(dashboard)/seller/dashboard/store/profile/component/DeleteButton";
 import { Button } from "@/components/ui/button";
 import {
   Form,
