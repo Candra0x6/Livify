@@ -20,7 +20,7 @@ export default function SectionHeader({
   return (
     <div className="flex justify-between items-end mb-5">
       <div className="">
-        <h1 className="xl:text-[2.5rem] lg:text-[2.2rem] sm:text-[2rem] text-[1.5rem] font-bold">
+        <h1 className="xl:text-[2.5rem] lg:text-[2.2rem] sm:text-[2rem] text-[1.8rem] font-bold">
           {title}
         </h1>
         <span className="text-textSecondary text-[0.8rem] sm:text-[1rem] lg:text-[1.2rem]">
