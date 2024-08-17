@@ -6,8 +6,8 @@ import {
 	productSchema,
 } from "@/lib/validators/productSchema";
 import { errorHandler } from "@/middleware";
-import { uploadImages } from "@/services/imageUploadService";
-import { createProduct } from "@/services/productService";
+import { uploadImages } from "@/services/db/imageUploadService";
+import { createProduct } from "@/services/db/productService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

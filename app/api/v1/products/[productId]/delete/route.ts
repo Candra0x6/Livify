@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { errorHandler } from "@/middleware";
-import { deleteProduct } from "@/services/productService";
+import { deleteProduct } from "@/services/db/productService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

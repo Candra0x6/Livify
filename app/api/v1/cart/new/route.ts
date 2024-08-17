@@ -1,7 +1,7 @@
 
 import { encrypt, getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
-import { addToCart } from "@/services/cartService";
+import { addToCart } from "@/services/db/cartService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import { Prisma } from "@prisma/client";

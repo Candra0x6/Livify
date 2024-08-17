@@ -1,69 +1,70 @@
-"use server";
+"use client";
 
 import { MarqueeVertical } from "@/components/ReviewShow";
 import SectionHeader from "@/components/SectionHeader";
 import { CategoryCard } from "@/components/cards/CategoryCard";
 import { ProductCard } from "@/components/cards/ProductCard";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
-import { Button } from "@/components/ui/button";
+import DotPattern from "@/components/magicui/dot-pattern";
+import { CategorySkeletonCard } from "@/components/skeletons/CategorySkeletonCard";
+import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
 import { cn } from "@/lib/utils";
+import {
+  type ProductsResponse,
+  fetchCategory,
+  fetchProducts,
+} from "@/services/api/productsApi";
 import type { Category, Product } from "@prisma/client";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { FaArrowRightLong, FaGithub, FaStar } from "react-icons/fa6";
 
-export async function getProducts() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product`,
-    {
-      method: "GET",
+export default function RootPage() {
+  const [category, setcategory] = useState<{ categories: Category[] }>();
+  const [products, setProducts] = useState<ProductsResponse[] | undefined>();
+  const [loading, setLoading] = useState<boolean>(true);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const productsPromise = fetchProducts({
+          limit: 10,
+          categoryId: "",
+        });
+        const categoryPromise = fetchCategory();
+
+        const [productsData, categoryData] = await Promise.all([
+          productsPromise,
+          categoryPromise,
+        ]);
+        setProducts(productsData);
+        setcategory(categoryData);
+      } catch (err) {
+        setLoading(true);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
-  );
-  const data = await res.json();
-
-  return data.products;
-}
-
-export async function getCategory() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/category`,
-    {
-      method: "GET",
-    }
-  );
-  const body = await res.json();
-  return body.categories;
-}
-
-export default async function RootPage() {
-  const products: Product[] = await getProducts();
-  const category: Category[] = await getCategory();
-  console.log(products);
+    fetchData();
+  }, []);
   return (
     <div className="container mx-auto">
       <section className="bg-gradient-to-b from-transparent to-background items-center relative overflow-hidden">
-        <div
-          className="absolute opacity-20"
-          style={{
-            backgroundImage: "radial-gradient(#000000 1px, transparent 1px)",
-            backgroundSize: "var(--dot-spacing) var(--dot-spacing)",
-            "--dot-spacing": "20px",
-            "--dot-size": "30px",
-            width: "var(--dots-width)",
-            height: "var(--dots-height)",
-            "--dots-width": "100vh",
-            "--dots-height": "500px",
-          }}
+        <DotPattern
+          className={cn("[mask-image:radial-gradient(white,transparent)]")}
         />
         <div className="z-10">
           <div className="md:flex relative min-h-[90vh]">
             <div className="md:max-w-[70%] w-full flex flex-col mt-32 mb-10 ml-1">
               <div className="z-10 flex">
                 <AnimatedGradientText>
-                  <FaGithub />{" "}
-                  <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />{" "}
+                  <FaGithub />
+                  <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />
                   <span
                     className={cn(
-                      "inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent"
+                      "inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
                     )}
                   >
                     Github Repo
@@ -78,10 +79,10 @@ export default async function RootPage() {
                 Build your own furniture store with easy transaction via online
                 on this platform.
               </span>
-              <Button className="w-[10rem] mt-5 group">
+              <Link href="/wishlist" className="w-[10rem] mt-5 group">
                 Get Started
                 <FaArrowRightLong className="transition-all duration-500 group-hover:translate-x-2 ease-in-out" />
-              </Button>
+              </Link>
             </div>
             <div className="md:max-w-[40%] md:min-w-[30%] w-full h-full flex items-start relative">
               <MarqueeVertical />
@@ -89,7 +90,7 @@ export default async function RootPage() {
           </div>
         </div>
       </section>
-      <section id="#category" className="">
+      <section id="#category">
         <SectionHeader
           title="Explore Category"
           description="Find the perfect product effortlessly."
@@ -97,9 +98,15 @@ export default async function RootPage() {
           href="/products"
         />
         <div className="grid lg:grid-cols-5 sm:grid-cols-4 grid-cols-3 sm:gap-5 gap-2">
-          {category &&
-            category.length > 0 &&
-            category.map((item, id) => <CategoryCard key={id} data={item} />)}
+          {loading ? (
+            <CategorySkeletonCard />
+          ) : (
+            category &&
+            category?.categories?.length > 0 &&
+            category?.categories?.map((item) => (
+              <CategoryCard key={item.id} data={item} />
+            ))
+          )}
         </div>
       </section>
       <section className="mt-36">
@@ -111,19 +118,7 @@ export default async function RootPage() {
         <div className="grid xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-3 md:gap-3 grid-cols-2 mt-12 xl:gap-6 gap-2">
           {products &&
             products.length > 0 &&
-            products.map((item, i) => (
-              <ProductCard
-                key={i}
-                name="Vitae Supandes"
-                image={item.images[0]}
-                price={30.212}
-                color={[""]}
-                description="Lorem ipsum dolor sit amet, consectetur adip non proident et non proident et et et et et et et et et et et et et et et et"
-                productId={item.id}
-                slug={item.slug}
-                storeId={item.storeId}
-              />
-            ))}
+            products.map((item) => <ProductCard key={item.id} data={item} />)}
         </div>
       </section>
       <section className="mt-36">
@@ -133,21 +128,13 @@ export default async function RootPage() {
           navigate="See All Products"
         />
         <div className="grid xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-3 md:gap-3 grid-cols-2 mt-12 xl:gap-6 gap-2">
-          {products &&
+          {loading ? (
+            <ProductGridSkeletonCard />
+          ) : (
+            products &&
             products.length > 0 &&
-            products.map((item, i) => (
-              <ProductCard
-                key={i}
-                name="Vitae Supandes"
-                image={item.images[0] as string}
-                price={30.212}
-                color={[""]}
-                description="Lorem ipsum dolor sit amet, consectetur adip non proident et non proident et et et et et et et et et et et et et et et et"
-                productId={item.id}
-                slug={item.slug}
-                storeId={item.storeId}
-              />
-            ))}
+            products.map((item) => <ProductCard key={item.id} data={item} />)
+          )}
         </div>
       </section>
     </div>

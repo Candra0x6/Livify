@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { errorHandler } from "@/middleware";
-import { getOrderById } from "@/services/orderService";
+import { getOrderById } from "@/services/db/orderService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

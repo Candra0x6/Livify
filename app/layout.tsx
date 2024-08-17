@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { getUserCredentials } from "@/utils/auth/auth";
 import type { RefreshSession, Session, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 const poppins = Poppins({
   subsets: ["latin"],
   display: "swap",
@@ -44,18 +45,22 @@ export default async function RootLayout({
     const res = await getUserDetail(session.userId);
     user = res;
   }
-  console.log(user);
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
-        <RefreshHandler
-          initialSession={session as sessionEror}
-          refreshToken={refresh as RefreshSession}
-        />
+        {(session || refresh) && (
+          <RefreshHandler
+            initialSession={session as sessionEror}
+            refreshToken={refresh as RefreshSession}
+          />
+        )}
         <header className="w-full bg-black">
           <Navbar user={user?.user} />
         </header>
-        <main>{children}</main>
+        <main>
+          <Toaster />
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

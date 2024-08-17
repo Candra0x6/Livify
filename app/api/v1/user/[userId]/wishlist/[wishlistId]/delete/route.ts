@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 
 import { errorHandler } from "@/middleware";
-import { addWishlist, deleteWishlist } from "@/services/wishlistService";
+import { addWishlist, deleteWishlist } from "@/services/db/wishlistService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

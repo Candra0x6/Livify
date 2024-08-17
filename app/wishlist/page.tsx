@@ -3,18 +3,8 @@ import SectionHeader from "@/components/SectionHeader";
 import { ProductCard } from "@/components/cards/ProductCard";
 import ProductListCard from "@/components/cards/ProductListCard";
 import ContainerLayout from "@/components/layout/ContainerLayout";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import Flex from "@/components/ui/flex";
 import Grid from "@/components/ui/grid";
-import { Heading } from "@/components/ui/heading";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -22,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import type { Product, Wishlist } from "@prisma/client";
 import Image from "next/image";
@@ -32,31 +21,52 @@ import ListIcon from "../../public/icons/list-view.svg";
 
 import { FilterElement, MobileFilter } from "@/components/Filter";
 import { getSession } from "@/lib/auth/auth";
+import type { queryPayload } from "@/lib/validators/productSchema";
+import { fetchWishlistProduct } from "@/services/api/wishlistApi";
 import type { deleteWishlistBody } from "../api/v1/user/[userId]/wishlist/[wishlistId]/delete/route";
+import { ProductsResponse } from "@/services/api/productsApi";
+import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
 
-interface dataType extends Wishlist {
-  product: Product;
+export interface WishlistProductType extends Wishlist {
+  product: ProductsResponse;
 }
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState<dataType[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistProductType[] | undefined>(
+    [],
+  );
   const [selectValue, setSelectValue] = useState("grid-view");
+  const [query, setQuery] = useState<queryPayload>({
+    limit: 10,
+    page: 1,
+    categoryId: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const getWishlist = async () => {
-      const session = await getSession();
-      const userId = session?.userId;
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/${userId}/wishlist`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await res.json();
-      setWishlist(data.wishlists);
-    };
-    getWishlist();
-  }, []);
+    const getWishlistProducts = async () => {
+      try {
+        setLoading(true);
+        const data: WishlistProductType[] | undefined =
+          await fetchWishlistProduct({
+            limit: query.limit,
+            page: query.page,
+            sortBy: "createdAt",
+            sortOrder: query.sortOrder,
+            categoryId: query.categoryId,
+          });
+        setWishlist(data);
+      } catch (err) {
+        setLoading(true);
 
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getWishlistProducts();
+  }, [query]);
   const removeWishlist = async ({
     productId,
     wishlistId,
@@ -68,7 +78,7 @@ export default function WishlistPage() {
       {
         method: "DELETE",
         body: JSON.stringify({ productId, wishlistId }),
-      }
+      },
     );
     const data = await res.json();
     console.log(data);
@@ -84,7 +94,7 @@ export default function WishlistPage() {
         </Flex>
         <div className="w-full md:gap-10 flex gap-x-2">
           <div className="md:hidden flex items-center">
-            <MobileFilter />
+            <MobileFilter query={query} setQuery={setQuery} />
           </div>
           <form className="max-w-sm flex items-center h-full py-2 md:w-[180px] w-full gap-x-2 ">
             <Select>
@@ -125,36 +135,26 @@ export default function WishlistPage() {
           direction="column"
           className="md:max-w-[20%] md:w-[20%] md:flex-col md:flex hidden gap-y-10"
         >
-          <FilterElement />
+          <FilterElement query={query} setQuery={setQuery} />
         </Flex>
         <Grid
-          className={`grid-flow-row md:w-[80%] w-full ${
+          className={`grid-flow-row md:w-[80%] w-full h-fit ${
             selectValue === "grid-view"
               ? "xl:grid-cols-4 xl:gap-15 sm:grid-cols-3 md:gap-3 grid-cols-2 md:mt-0 xl:gap-6 gap-2"
               : "grid-cols-1 lg:gap-y-5 gap-y-2"
           }`}
         >
-          {" "}
-          {wishlist &&
+          {loading ? (
+            <ProductGridSkeletonCard />
+          ) : (
+            wishlist &&
             wishlist.length > 0 &&
-            wishlist.map((item, index) => {
+            wishlist.map((item) => {
               const Comp =
                 selectValue === "grid-view" ? ProductCard : ProductListCard;
-              return (
-                <Comp
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  key={index}
-                  name={item.product.name}
-                  image={item.product.images[0]}
-                  price={item.product.price as unknown as number}
-                  color={[""]}
-                  description={item.product.description as string}
-                  productId={item.product.id}
-                  slug={item.product.slug}
-                  storeId={item.storeId}
-                />
-              );
-            })}
+              return <Comp key={item.id} data={item.product} />;
+            })
+          )}
         </Grid>
       </Flex>
     </ContainerLayout>

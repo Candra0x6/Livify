@@ -1,10 +1,9 @@
 "use server";
-import { getSession } from "@/lib/auth/auth";
 import React from "react";
-import Store from "./page";
+import Profile from "./page";
 
-async function StoreLayout() {
-	return <Store />;
+async function ProfileLayout() {
+  return <Profile />;
 }
 
-export default StoreLayout;
+export default ProfileLayout;

@@ -28,3 +28,14 @@ export function Rejected({ status }: { status: string }) {
     </div>
   );
 }
+export const statusBadge = (status: string) => {
+  const statusComponents: { [key: string]: JSX.Element } = {
+    PROCESSING: <Processing status="Processing" />,
+    PENDING: <Pending status="Pending" />,
+    CANCELLED: <Rejected status="Cancelled" />,
+    COMPLETED: <Success status="Completed" />,
+    REJECTED: <Rejected status="Rejected" />,
+  };
+
+  return statusComponents[status] || null;
+};

@@ -1,4 +1,4 @@
-import type { productBody } from "@/app/products/(route)/[storeId]/[productSlug]/page";
+import type { productBody } from "@/app/products/(route)/[storeSlug]/[productSlug]/page";
 import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
@@ -52,8 +52,12 @@ export async function POST(request: Request) {
 
 		const response = NextResponse.json(
 			{
-				order: createOrder,
-				orderItemsCount: createdOrderItems.count,
+				message: "Successfully Make Order",
+				data: {
+					order: createOrder,
+					orderItemsCount: createdOrderItems.count,
+				}
+
 			},
 			{ status: 200, statusText: "Success Create Order" },
 		);

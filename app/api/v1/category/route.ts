@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { categorySchema } from "@/lib/validators/categorySchema";
 import { errorHandler } from "@/middleware";
-import { CategoryService } from "@/services/categoryService";
+import { CategoryService } from "@/services/db/categoryService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { Category } from "@prisma/client";

@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { ordersQuerySchema } from "@/lib/validators/orderSchema";
 import { errorHandler } from "@/middleware";
-import { getUserOrders } from "@/services/orderService";
+import { getUserOrders } from "@/services/db/orderService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
@@ -22,7 +22,7 @@ export async function GET(
         categoryId: url.searchParams.get("categoryId") || undefined,
         sortBy: url.searchParams.get("sortBy") || "createdAt",
         sortOrder: url.searchParams.get("sortOrder") || "desc",
-        status: url.searchParams.get("status") || "PENDING"
+        status: url.searchParams.get("status") || undefined,
       });
 
     if (!userId) {
@@ -34,7 +34,7 @@ export async function GET(
       categoryId,
       sortBy,
       sortOrder,
-      status
+      status,
     });
 
     if (!order) {
@@ -43,7 +43,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        order: order,
+        data: order,
       },
       200,
     );

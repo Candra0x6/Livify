@@ -9,11 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }: React.PropsWithChildren) {
   const router = useRouter();
-
+  const path = usePathname();
   const handleValueChange = (value: string) => {
     switch (value) {
       case "store":
@@ -22,12 +22,11 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
       case "purches":
         router.push("/seller/dashboard/purches");
         break;
-      // Tambahkan case lain jika diperlukan
     }
   };
   return (
     <>
-      <div className="w-full h-screen flex">
+      <div className="w-full min-h-screen h-full flex">
         <aside className="md:max-w-[20%] z-0 w-full md:flex hidden">
           <SidebarNav />
         </aside>
@@ -43,7 +42,13 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
                   id="framework"
                   className="lg:w-[150px] w-full flex bg-accent hover:bg-accent/80 items-center rounded-md h-10 ml-2 cursor-pointer"
                 >
-                  <SelectValue placeholder="Store" />
+                  <SelectValue
+                    placeholder={
+                      path.includes("/seller/dashboard/store")
+                        ? "Store"
+                        : "Purches"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectItem value="store">Store</SelectItem>
@@ -52,7 +57,6 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
               </Select>
             </div>
           </nav>
-
           <main className="p-10 w-full ">{children}</main>
         </div>
       </div>

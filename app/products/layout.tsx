@@ -1,6 +1,3 @@
-import Footer from "@/components/element/Footer";
-import HeaderNav from "@/components/layout/HeaderWrap";
-
 export default async function ProductLayout({
   children,
 }: {
@@ -8,7 +5,7 @@ export default async function ProductLayout({
 }) {
   return (
     <>
-      <main className="relative">{children}</main>;
+      <div className="relative">{children}</div>;
     </>
   );
 }

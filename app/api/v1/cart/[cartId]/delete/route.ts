@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { errorHandler } from "@/middleware";
-import { deleteCart, incrementCart } from "@/services/cartService";
+import { deleteCart, incrementCart } from "@/services/db/cartService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

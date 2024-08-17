@@ -1,50 +1,30 @@
-import { AddProductForm } from "@/components/forms/AddProductForm";
 import { EditProductForm } from "@/components/forms/EditProduct";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { Product } from "@prisma/client";
+import { type ProductCat, fetchProductById } from "@/services/api/productsApi";
 import { useEffect, useState } from "react";
-import { IoAdd } from "react-icons/io5";
 import { PiNotePencil } from "react-icons/pi";
 
 export const EditProductDialog: React.FC<{ Id: string }> = ({ Id }) => {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState<ProductCat>();
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     const getProductById = async (productId: string) => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product/${productId}`,
-          {
-            method: "GET",
-          }
-        );
-        const data = await res.json();
-        setProduct(data.product);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      } finally {
-        setIsLoading(false);
-      }
+      const data = await fetchProductById(productId);
+      setProduct(data?.product);
     };
 
     if (isOpen) {
       getProductById(Id);
     }
   }, [Id, isOpen]);
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -64,13 +44,7 @@ export const EditProductDialog: React.FC<{ Id: string }> = ({ Id }) => {
             when you're done.
           </DialogDescription>
         </DialogHeader>
-        {isLoading ? (
-          <div>Loading product data...</div>
-        ) : product ? (
-          <EditProductForm data={product && product} />
-        ) : (
-          <div>Failed to load product data.</div>
-        )}
+        <EditProductForm data={product && product} />
       </DialogContent>
     </Dialog>
   );

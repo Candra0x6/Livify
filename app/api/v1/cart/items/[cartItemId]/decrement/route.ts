@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { errorHandler } from "@/middleware";
-import { decrementCart, incrementCart } from "@/services/cartService";
+import { decrementCart, incrementCart } from "@/services/db/cartService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { cartItem
     })
     return ApiResponse.success(
       {
-        message: "Successfully increment cart", data: {
+        message: "Successfully decrement cart", data: {
           carts: {
             cart
           }

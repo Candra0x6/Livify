@@ -7,9 +7,9 @@ import {
 } from "@/lib/validators/productSchema";
 import { type storePayload, storeSchema } from "@/lib/validators/storeSchema";
 import { errorHandler } from "@/middleware";
-import { uploadImage } from "@/services/imageUploadService";
-import { createProduct } from "@/services/productService";
-import { updateStore } from "@/services/storeService";
+import { uploadImage } from "@/services/db/imageUploadService";
+import { createProduct } from "@/services/db/productService";
+import { updateStore } from "@/services/db/storeService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";

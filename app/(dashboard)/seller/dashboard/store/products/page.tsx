@@ -16,7 +16,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -24,61 +23,64 @@ import {
 } from "@/components/ui/table";
 import { Text } from "@/components/ui/text";
 import { getSession } from "@/lib/auth/auth";
-import { cn } from "@/lib/utils";
-import type { Product } from "@prisma/client";
+import { cn, formatPrice } from "@/lib/utils";
+import {
+  type ProductResponse,
+  ProductsResponse,
+  fetchProductsBySearch,
+  fetchStoreProducts,
+  fetchStoreProductsBySearch,
+} from "@/services/api/productsApi";
 import { format } from "date-fns";
 import { CalendarIcon, FilterIcon } from "lucide-react";
-import { Key, useEffect, useState } from "react";
-import { CgSearch } from "react-icons/cg";
+import { Key, useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { DeleteProductDialog } from "./component/delete-product";
 import { EditProductDialog } from "./component/edit-product-dialog";
 import { NewProductDialog } from "./component/new-product-dialog";
-
-interface paginationType {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-interface productType {
-  pagination: paginationType;
-  products: Product[];
-}
+import TableProductSkeleton from "@/components/skeletons/TableProductSkeleton";
 export default function Products() {
-  const [products, setProducts] = useState<productType>();
+  const [products, setProducts] = useState<ProductsResponse[] | undefined>();
   const [date, setDate] = useState<Date>();
+  const [keyword, setKeyword] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const handleSearch = () => {
+    if (searchRef.current) {
+      setKeyword(searchRef.current.value);
+    }
+  };
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (searchRef.current) {
+        setKeyword(searchRef.current.value);
+      }
+    }
+  };
   useEffect(() => {
     const product = async () => {
-      const session = await getSession();
-      const storeId = session?.storeId as string | undefined;
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}/products`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await res.json();
-      setProducts(data);
+      try {
+        setLoading(true);
+        const session = await getSession();
+        const storeId = session?.storeId as string;
+        const data = await fetchStoreProductsBySearch(storeId, {
+          query: keyword as string,
+        });
+        setProducts(data?.products);
+      } catch (err) {
+        setLoading(true);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-
-    const orders = async () => {
-      const orderId = "clyvf9znn000brb0cc3832o4q";
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/order/${orderId}`,
-        {
-          method: "GET",
-        }
-      );
-      const data = await res.json();
-    };
-    orders();
     product();
-  }, []);
+  }, [keyword]);
   return (
     <>
-      {products && (
+      {!products && (
         <div className="w-full mb-5 lg:h-[20vh] h-[14vh] rounded-md bg-white shadow-sh-card">
           <div className="flex justify-between w-full h-full lg:p-10 p-5">
             <div className="">
@@ -105,7 +107,7 @@ export default function Products() {
                 variant={"outline"}
                 className={cn(
                   "w-[200px] justify-start text-left font-normal bg-white border-0 shadow-sh-card rounded-md",
-                  !date && "text-muted-foreground"
+                  !date && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -155,10 +157,17 @@ export default function Products() {
         <div className="flex gap-x-2 w-full justify-end">
           <div className="lg:w-[230px] w-full flex bg-white shadow-sh-card hover:bg-accent/80 items-center rounded-md h-10">
             <div className="p-4 flex items-center justify-between w-full ">
-              <Button variant="ghost" className=" rounded-none text-white p-0">
+              <Button
+                onClick={handleSearch}
+                variant="ghost"
+                className=" rounded-none text-white p-0"
+              >
                 <CiSearch className="text-2xl text-foreground" />
               </Button>
               <Input
+                ref={searchRef}
+                onKeyDown={handleKeyDown}
+                type="text"
                 placeholder="Search Prodcucts"
                 className="bg-transparent ring-0 border-0 focus:ring-0 focus-visible:ring-0"
               />
@@ -180,39 +189,54 @@ export default function Products() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products?.products?.map((item) => (
-            <TableRow key={item.id} className="border-y-[1px] border-accent">
-              <TableCell>
-                <div className="w-14 aspect-square">
-                  <img
-                    alt="chair"
-                    className="h-full aspect-square w-full object-contain "
-                    src={item.images[0] as string}
-                  />
-                </div>
+          {loading ? (
+            <TableProductSkeleton />
+          ) : products ? (
+            products.length > 0 &&
+            products?.map((item) => (
+              <TableRow key={item.id} className="border-y-[1px] border-accent">
+                <TableCell>
+                  <div className="w-14 aspect-square">
+                    <img
+                      alt="chair"
+                      className="h-full aspect-square w-full object-contain "
+                      // @ts-ignore
+                      src={item.images[0] as string}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.Category.name}</TableCell>
+                {/* @ts-ignore */}
+                <TableCell>{formatPrice(parseFloat(item.price))}</TableCell>
+                <TableCell>{item.stock}</TableCell>
+                <TableCell>
+                  <div className="flex gap-x-2">
+                    <div className="aspect-square w-5 bg-red rounded-full" />
+                    <div className="aspect-square w-5 bg-red rounded-full" />
+                    <div className="aspect-square w-5 bg-red rounded-full" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-x-2">
+                    <EditProductDialog Id={item.id} />
+                    <DeleteProductDialog Id={item.id} />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow className="border-y-[1px] border-accent w-full">
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="font-semibold text-xl">
+                No Product Found
               </TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.categoryId}</TableCell>
-              <TableCell>{item.price.toString()}</TableCell>
-              <TableCell>{item.stock}</TableCell>
-              <TableCell>
-                <div className="flex gap-x-2">
-                  <div className="aspect-square w-5 bg-red rounded-full" />
-                  <div className="aspect-square w-5 bg-red rounded-full" />
-                  <div className="aspect-square w-5 bg-red rounded-full" />
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-x-2">
-                  <EditProductDialog Id={item.id} />
-                  <DeleteProductDialog Id={item.id} />
-                </div>
-              </TableCell>
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
             </TableRow>
-          )) || (
-            <h1 className="absolute w-full text-center text-2xl mt-2">
-              Products are Empty
-            </h1>
           )}
         </TableBody>
       </Table>

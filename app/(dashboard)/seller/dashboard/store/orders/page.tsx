@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -17,7 +16,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -25,110 +23,97 @@ import {
 } from "@/components/ui/table";
 import { Text } from "@/components/ui/text";
 import { getSession } from "@/lib/auth/auth";
-import { cn } from "@/lib/utils";
+import { cn, formatDate, formatPrice } from "@/lib/utils";
 import type { ORDER_STATUS, Order } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, FilterIcon, MinusCircle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 
+import {
+  type OrderResponse,
+  fetchOrderById,
+  fetchOrdersBySearch,
+  fetchStoreOrders,
+} from "@/services/api/orderApi";
 import {
   Pending,
   Processing,
   Rejected,
   Success,
+  statusBadge,
 } from "./component/order-status-badge";
-import { PopoverOrder } from "./component/popover-details-order";
+import {
+  PopoverOrder,
+  type orderType,
+} from "./component/popover-details-order";
+import TableOrderSkeleton from "@/components/skeletons/TableOrderSkeleton";
 function Orders() {
-  const [orders, setOrders] = useState<Order[]>();
+  const [orders, setOrders] = useState<OrderResponse[] | undefined>([]);
   const [date, setDate] = useState<Date>();
-  const [selectedItemId, setSelectedItemId] = useState(null);
-  const [orderItem, setOrderItem] = useState<{ order: Order }>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const getOrders = useCallback(async () => {
-    const session = await getSession();
-    const storeId = session?.storeId;
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}/orders`,
-      {
-        method: "GET",
-      }
-    );
-    const data = await res.json();
-    setOrders(data?.store?.orders);
-  }, []);
-  const getOrderDetails = useCallback(async () => {
-    if (!selectedItemId) {
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/order/${selectedItemId}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      setOrderItem(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedItemId]);
-  useEffect(() => {
-    getOrders();
-  }, [getOrders]);
-  useEffect(() => {
-    getOrderDetails();
-  }, [getOrderDetails]);
-  function convertToDateOnly(dateString: Date) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
+  const [selectedItemId, setSelectedItemId] = useState<string>();
+  const [orderItem, setOrderItem] = useState<
+    { order: orderType } | undefined
+  >();
+  const [tableLoading, setTableLoading] = useState<boolean>(true);
+  const [popLoading, setPopLoading] = useState<boolean>(true);
 
-  const confirmStatus = async (
-    orderId: string,
-    action: "confirm" | "reject"
-  ) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/order/${orderId}/status`,
-      {
-        method: "PUT",
-        body: JSON.stringify(action),
-      }
-    );
-    const data = await res.json();
-    console.log(data);
-  };
+  const [keyword, setKeyword] = useState<string>();
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  const cancleOrder = async (orderId: string) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/order/${orderId}/cancle`,
-      {
-        method: "PUT",
-      }
-    );
-    const data = await res.json();
+  const handleSearch = () => {
+    if (searchRef.current) {
+      setKeyword(searchRef.current.value);
+    }
   };
-  const statusBadge = (status: string) => {
-    console.log(status);
-    const statusComponents: { [key: string]: JSX.Element } = {
-      PROCESSING: <Processing status="Processing" />,
-      PENDING: <Pending status="Pending" />,
-      CANCELLED: <Rejected status="Cancelled" />,
-      COMPLETED: <Success status="Completed" />,
-      REJECTED: <Rejected status="Rejected" />,
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (searchRef.current) {
+        setKeyword(searchRef.current.value);
+      }
+    }
+  };
+  useEffect(() => {
+    const getOrder = async () => {
+      try {
+        setTableLoading(true);
+        const session = await getSession();
+        const storeId = session?.storeId as string;
+
+        const data = await fetchOrdersBySearch(storeId, {
+          query: keyword as string,
+        });
+        setOrders(data?.data.orders);
+      } catch {
+        setTableLoading(true);
+        throw new Error("Something went wrong");
+      } finally {
+        setTableLoading(false);
+      }
+    };
+    getOrder();
+  }, [keyword]);
+  useEffect(() => {
+    const getOrderById = async () => {
+      try {
+        setPopLoading(true);
+        const data = await fetchOrderById(selectedItemId as string);
+        setOrderItem(data);
+      } catch (err) {
+        setPopLoading(true);
+        console.error(err);
+      } finally {
+        setPopLoading(false);
+      }
     };
 
-    return statusComponents[status] || null;
-  };
+    getOrderById();
+  }, [selectedItemId]);
+  console.log(orders);
 
   return (
-    <>
+    <div className=" relative">
       <div className="flex w-full justify-between mb-5">
         <div className=" gap-x-3 lg:flex hidden">
           <Popover>
@@ -137,7 +122,7 @@ function Orders() {
                 variant={"outline"}
                 className={cn(
                   "w-[200px] justify-start text-left font-normal bg-white border-0 shadow-sh-card rounded-md",
-                  !date && "text-muted-foreground"
+                  !date && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -202,10 +187,16 @@ function Orders() {
         <div className="flex gap-x-2 w-full justify-end">
           <div className="lg:w-[230px] w-full flex bg-white shadow-sh-card  hover:bg-accent/80 items-center rounded-md h-10">
             <div className="p-4 flex items-center justify-between w-full">
-              <Button variant="ghost" className=" rounded-none text-white p-0">
+              <Button
+                onClick={handleSearch}
+                variant="ghost"
+                className=" rounded-none text-white p-0"
+              >
                 <CiSearch className="text-2xl text-foreground" />
               </Button>
               <Input
+                ref={searchRef}
+                onKeyDown={handleKeyDown}
                 placeholder="Search Prodcucts"
                 className="bg-transparent ring-0 border-0 focus:ring-0 focus-visible:ring-0"
               />
@@ -213,7 +204,7 @@ function Orders() {
           </div>
         </div>
       </div>
-      <Table className="bg-white shadow-sh-card p-10 rounded-lg">
+      <Table className="bg-white shadow-sh-card p-10 rounded-lg relative">
         <TableHeader>
           <TableRow className=" text-[15px] ">
             <TableHead className="w-[4%]">Id</TableHead>
@@ -228,51 +219,54 @@ function Orders() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders &&
+          {tableLoading ? (
+            <TableOrderSkeleton />
+          ) : orders ? (
+            orders &&
             orders.length > 0 &&
             orders.map((item) => (
-              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-              <PopoverOrder isLoading={isLoading} data={orderItem?.order}>
+              <PopoverOrder
+                key={item.id}
+                isLoading={popLoading}
+                data={orderItem?.order}
+              >
                 <TableRow
+                  key={item.id}
                   className="border-y-[1px] border-accent hover:bg-accent cursor-pointer rounded-md"
                   onClick={() => setSelectedItemId(item.orderId)}
                 >
                   <TableCell>{item.product.id}</TableCell>
                   <TableCell>{item.product.name}</TableCell>
                   <TableCell>{item.order.orderAddress}</TableCell>
-                  <TableCell>{convertToDateOnly(item.ordersDate)}</TableCell>
-                  <TableCell>{item.product.categoryId}</TableCell>
-                  <TableCell>{item.price}</TableCell>
+                  <TableCell>{formatDate(item.ordersDate)}</TableCell>
+                  <TableCell>{item.product.Category.name}</TableCell>
+                  {/* @ts-ignore */}
+                  <TableCell>{formatPrice(item.price)}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.order.totalPrice}</TableCell>
+                  {/* @ts-ignore */}
+                  <TableCell>{formatPrice(item.order.totalPrice)}</TableCell>
                   <TableCell>{statusBadge(item.order.status)}</TableCell>
-                  {/* <div className="flex">
-                  <Button
-                    onClick={async () =>
-                      await confirmStatus(item.order.id, "confirm")
-                    }
-                  >
-                    <FaCheck className="text-green-500 text-2xl" />
-                  </Button>
-                  <Button
-                    onClick={async () =>
-                      await confirmStatus(item.order.id, "reject")
-                    }
-                  >
-                    <IoClose className="text-rose-500 text-2xl" />
-                  </Button>
-                  <Button
-                    onClick={async () => await cancleOrder(item.order.id)}
-                  >
-                    <MinusCircle className="text-rose-500 text-2xl" />
-                  </Button>
-                </div> */}
                 </TableRow>
               </PopoverOrder>
-            ))}
+            ))
+          ) : (
+            <TableRow className="border-y-[1px] border-accent w-full">
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="font-semibold text-xl w-[20%]">
+                No Order Found
+              </TableCell>
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
+              <TableCell className="" />
+            </TableRow>
+          )}
         </TableBody>
       </Table>
-      <div className="flex w-full justify-between py-10">
+      <div className="flex w-full justify-between mt-10">
         <div className="">
           <Text className=" text-sm">Showing 1-9 of 78</Text>
         </div>
@@ -285,7 +279,7 @@ function Orders() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

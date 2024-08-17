@@ -19,12 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useOrderAction } from "@/hooks/useOrderAction";
 import type { Category, Order, OrderItem, Product } from "@prisma/client";
 import { data } from "autoprefixer";
 import Image from "next/image";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { IoAdd } from "react-icons/io5";
 import tes from "../../../../../../public/images/sofa-chair.png";
+import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkeletonCard";
+import { formatPrice } from "@/lib/utils";
 
 interface productWCategory extends Product {
   Category: Category;
@@ -32,7 +35,7 @@ interface productWCategory extends Product {
 interface orderItemsType extends OrderItem {
   product: productWCategory;
 }
-interface orderType extends Order {
+export interface orderType extends Order {
   orderItems: orderItemsType[];
 }
 interface props {
@@ -42,42 +45,36 @@ interface props {
 }
 
 export const PopoverOrder = ({ data, children, isLoading }: props) => {
-  const totalItems = () => {
-    const items: number[] | undefined = data?.orderItems.map(
-      (item) => item.quantity
-    );
-    const sum = items?.reduce(
-      (accumulator, currentValue) => accumulator + currentValue,
-      0
-    );
-    return sum;
-  };
+  const { confirmOrder, rejectOrder } = useOrderAction();
+  const totalItems = useMemo(() => {
+    return data?.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  }, [data?.orderItems]);
 
   return (
     <Dialog>
-      {" "}
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="w-[100vh] duration-300 transition-all ">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            Confirm Customer Order ?{" "}
+            Confirm Customer Order ?
           </DialogTitle>
           <DialogDescription>Confirm Customer Order</DialogDescription>
         </DialogHeader>
-        {isLoading ? (
-          "Loading"
-        ) : (
+        {
           <>
-            {data &&
-              data.orderItems.length > 0 &&
-              data.orderItems.map((item, id) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            {isLoading ? (
+              <ProductListSkeletonCard />
+            ) : (
+              data &&
+              data?.orderItems?.length > 0 &&
+              data?.orderItems?.map((item, id) => (
                 <div
-                  key={id}
+                  key={item.id}
                   className="group/card duration-300 transition-all w-full group cursor-pointer relative overflow-hidden flex gap-x-10 -xl p-4"
                 >
                   <div className="relative w-[10rem] aspect-square">
                     <img
+                      // @ts-ignore
                       src={item?.product?.images[0]}
                       alt="l"
                       className="w-full h-full aspect-square rounded-xl"
@@ -98,12 +95,14 @@ export const PopoverOrder = ({ data, children, isLoading }: props) => {
                     </div>
                     <div className="w-full flex justify-between ">
                       <span className="text-primary font-bold text-xl  items-end flex">
-                        $ {item?.product?.price as unknown as number}
+                        {/*@ts-ignore*/}
+                        {formatPrice(parseFloat(item.product.price))}
                       </span>
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
             <Table>
               <TableHeader>
                 <TableRow className="font-bold text-[16px] font-heading text-foreground ">
@@ -118,7 +117,7 @@ export const PopoverOrder = ({ data, children, isLoading }: props) => {
                       <h1>Total Items</h1>
                     </div>
                     <div className="">
-                      <p>{totalItems()}</p>
+                      <p>{totalItems}</p>
                     </div>
                   </TableCell>
                   <TableCell>{data?.orderAddress}</TableCell>
@@ -132,19 +131,25 @@ export const PopoverOrder = ({ data, children, isLoading }: props) => {
               </TableBody>
             </Table>
             <div className="flex w-full justify-end gap-x-2">
-              <Button variant="destructive" size="default" className="px-20">
+              <Button
+                variant="destructive"
+                size="default"
+                className="px-20"
+                onClick={() => rejectOrder(data?.id as string)}
+              >
                 Reject
               </Button>
-              <Button variant="default" className="px-20">
+              <Button
+                variant="default"
+                className="px-20"
+                onClick={() => confirmOrder(data?.id as string)}
+              >
                 Confirm
               </Button>
             </div>
           </>
-        )}
+        }
       </DialogContent>
     </Dialog>
   );
 };
-function forEach(arg0: (b: any) => any) {
-  throw new Error("Function not implemented.");
-}

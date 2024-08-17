@@ -1,8 +1,8 @@
 import prisma from "@/lib/db";
 import { productSchema } from "@/lib/validators/productSchema";
 import { errorHandler } from "@/middleware";
-import { getAllProducts } from "@/services/productService";
-import { getStoreById } from "@/services/storeService";
+import { getAllProducts } from "@/services/db/productService";
+import { getStoreById } from "@/services/db/storeService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
