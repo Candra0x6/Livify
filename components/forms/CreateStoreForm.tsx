@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useStoreAction } from "@/hooks/useStoreAction";
 import { getSession } from "@/lib/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect, usePathname, useRouter } from "next/navigation";
@@ -16,20 +17,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
-async function postCreateStore(data: AddStoreForm, userId: string) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("description", data.description || "");
-  if (data.image) {
-    formData.append("image", data.image);
-  }
+import toast from "react-hot-toast";
 
-  const res = await fetch(`/api/v1/store/new?userId=${userId}`, {
-    method: "POST",
-    body: formData,
-  });
-  return res;
-}
 const formSchema = z.object({
   name: z.string().min(3, {
     message: "*Store name must be at least 3 characters long",
@@ -41,9 +30,9 @@ const formSchema = z.object({
     .refine(
       (file) =>
         ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file?.type
+          file?.type,
         ),
-      "Only .jpg, .jpeg, .png and .webp formats are supported."
+      "Only .jpg, .jpeg, .png and .webp formats are supported.",
     ),
 });
 
@@ -53,7 +42,7 @@ export const CreateStoreForm: React.FC = () => {
   const [currentImage, setCurrentImage] = useState<string>();
   const [userId, setUserId] = useState<string>();
   const path = usePathname();
-
+  const { createStore } = useStoreAction();
   useEffect(() => {
     const fetchSession = async () => {
       try {
@@ -86,9 +75,10 @@ export const CreateStoreForm: React.FC = () => {
   };
   const onSubmit = async (values: AddStoreForm) => {
     try {
-      const createNewStore = await postCreateStore(values, userId as string);
+      const createNewStore = await createStore(values, userId as string);
       const result = await createNewStore.json();
       if (createNewStore.ok) {
+        toast.success("Successfully create store 😎");
         if (path === "/sign-up/store/create") {
           router.push("/");
         } else {
@@ -96,7 +86,7 @@ export const CreateStoreForm: React.FC = () => {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
   return (
