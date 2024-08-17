@@ -8,6 +8,8 @@ import type {
   Store,
 } from "@prisma/client";
 import type { ProductsParams } from "./productService";
+import { searchQueryPayload } from "@/lib/validators/searchParamsSchema";
+import { orderQueryPayload } from "@/lib/validators/orderSchema";
 
 export async function getStoreById(
   prisma: PrismaClient,
@@ -18,23 +20,28 @@ export async function getStoreById(
   });
 }
 
+interface OrdersParams extends ProductsParams {
+  status?: ORDER_STATUS;
+}
 export async function getStoreOrders(
   prisma: PrismaClient,
   storeId: string,
-  status?: ORDER_STATUS,
-  params: ProductsParams = {}
+  params: orderQueryPayload,
 ): Promise<{ orders: OrderItem[]; total: number }> {
-  const {
-    page = 1,
-    limit = 10,
-    categoryId,
-  } = params;
-
+  const { page = 1, limit = 10, query = "", status } = params;
   const skip = (page - 1) * limit;
 
   const where: Prisma.OrderItemWhereInput = {
     storeId: storeId,
-
+    product: {
+      name: {
+        contains: query,
+      },
+    },
+    order: {
+      // @ts-ignore
+      status,
+    },
   };
 
   const [orders, total] = await Promise.all([
@@ -48,13 +55,13 @@ export async function getStoreOrders(
             createdAt: true,
             orderAddress: true,
             totalPrice: true,
-            status: true
-          }
+            status: true,
+            updatedAt: true,
+          },
         },
       },
       skip,
       take: limit,
-
     }),
     prisma.orderItem.count({ where }),
   ]);
@@ -88,9 +95,29 @@ export async function deleteStore(
   prisma: PrismaClient,
   storeId: string,
 ): Promise<Store | null> {
-  return prisma.store.delete({
-    where: {
-      id: storeId,
-    },
+  return prisma.$transaction(async (tx) => {
+    await tx.orderItem.deleteMany({ where: { storeId } });
+    await tx.cartItem.deleteMany({ where: { storeId } });
+    await tx.product.deleteMany({ where: { storeId } });
+    await tx.orderItem.deleteMany({ where: { storeId } });
+    await tx.order.deleteMany({
+      where: {
+        orderItems: {
+          every: {
+            storeId,
+          },
+        },
+      },
+    });
+    await tx.session.updateMany({
+      where: { storeId },
+      data: {
+        storeId: null,
+      },
+    });
+    await tx.wishlist.deleteMany({ where: { storeId } });
+    return tx.store.delete({
+      where: { id: storeId },
+    });
   });
 }
