@@ -1,109 +1,93 @@
 "use client";
-import type { cartBody } from "@/app/api/v1/cart/new/route";
-import type { addWIshlistBody } from "@/app/api/v1/user/[userId]/wishlist/new/route";
-import { getSession } from "@/lib/auth/auth";
-import { addWishlistPayload } from "@/services/wishlistService";
+import slugify from "@/hooks/slugify";
+import { useProductActions } from "@/hooks/useProductAction";
+import { formatPrice } from "@/lib/utils";
+import {
+  type ProductsResponse,
+  fetchProducts,
+} from "@/services/api/productsApi";
+import type { Product } from "@prisma/client";
 import { Heart, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { type FC } from "react";
+import React, { useEffect, type FC } from "react";
 import { FaStar } from "react-icons/fa6";
-
 import { Button } from "../ui/button";
 
 export type ProductDetailsProps = {
-  name: string;
-  color: string[];
-  price: number;
-  image: string;
-  description?: string;
-  productId: string;
-  slug: string;
-  storeId: string;
+  data: ProductsResponse;
 };
-
-export const ProductCard: FC<ProductDetailsProps> = ({
-  name,
-  color,
-  price,
-  image,
-  productId,
-  slug,
-  storeId,
-}) => {
-  const router = useRouter();
-
-  const addCart = async (data: cartBody) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/cart/new`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
-    const result = await res.json();
-    console.log(result);
-  };
-
-  const addWishlist = async (data: addWIshlistBody) => {
-    const session = await getSession();
-    const userId = session?.userId;
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/${userId}/wishlist/new`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
-    const result = res.json();
-    console.log(result);
-  };
-  return (
-    <div className="group/card shadow-lg border hover:shadow-2xl duration-300 transition-all rounded-2xl space-y-4 h-full md:p-4 p-2 bg-white hover:bg-meta">
-      {/* Images and Actions */}
-      <div className="aspect-square rounded-2xl bg-gray-100 relative w-full">
-        <Button
-          size="icon"
-          variant="secondary"
-          className="p-0 rounded-full aspect-square absolute sm:m-2 m-1 right-0 md:w-10 md:h-10 w-8 h-8"
-          onClick={() => addWishlist({ storeId, productId })}
+export const ProductCard: React.FC<ProductDetailsProps> = React.memo(
+  ({ data }) => {
+    const { addCart, addWishlist } = useProductActions();
+    const handleAddToCart = () =>
+      addCart({ productId: data.id, storeId: data.storeId, quantity: 1 });
+    const handleAddToWishlist = () =>
+      addWishlist({ productId: data.id, storeId: data.storeId });
+    return (
+      <div className="group/card shadow-lg border hover:shadow-2xl duration-300 transition-all rounded-2xl space-y-4 md:p-4 p-3 bg-white hover:bg-meta cursor-pointer">
+        <Link
+          href={`/products/${slugify(data?.Store?.name)}/${
+            data?.slug
+          }?productId=${data.id}`}
         >
-          <Heart className="md:p-[2px] md:w-10 w-4 p-0" />
-        </Button>
-        <img
-          // @ts-ignore
-          src={image}
-          sizes="200"
-          alt={name}
-          className="aspect-square object-fill rounded-2xl w-full h-full"
-        />
-      </div>
-      <div className="space-y-3">
-        <div className="flex justify-between">
-          <h1 className="capitalize text-foreground font-medium md:text-xl text-sm">
-            {name}
-          </h1>
-          <div className="flex items-center gap-x-1">
-            <FaStar color="#f8ed24" className="md:w-5 w-3" />
-            <span className="md:text-base text-xs">4.5</span>
+          <div className="aspect-square rounded-2xl bg-gray-100 relative w-full">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="p-0 rounded-full aspect-square absolute sm:m-2 m-1 right-0 md:w-10 md:h-10 w-8 h-8 z-30"
+              onClick={handleAddToWishlist}
+            >
+              <Heart className="md:p-[2px] md:w-10 w-4 p-0" />
+            </Button>
+            <Image
+              loading="lazy"
+              priority={false}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              // @ts-ignore
+              src={data?.images[0]}
+              alt={data?.name}
+              className="aspect-square object-fill rounded-2xl w-full h-full"
+            />
+          </div>
+        </Link>
+
+        <div className="space-y-3">
+          <Link
+            href={`/products/${slugify(data?.Store?.name)}/${
+              data?.slug
+            }?productId=${data.id}`}
+          >
+            <div className="flex justify-between">
+              <h1 className="capitalize text-foreground font-medium md:text-xl text-sm">
+                {data?.name}
+              </h1>
+              <div className="flex items-center gap-x-1">
+                <FaStar color="#f8ed24" className="md:w-5 w-3" />
+                <span className="md:text-base text-xs">4.5</span>
+              </div>
+            </div>
+
+            <span className="md:text-base text-xs">{data?.Category?.name}</span>
+          </Link>
+          <div className="flex justify-between">
+            <span className="text-primary font-bold md:text-xl text-md">
+              {/* @ts-expect-error */}
+              {formatPrice(Number.parseFloat(data?.price))}
+            </span>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="p-0 rounded-full aspect-square md:w-10 md:h-10 w-8 h-8"
+              onClick={handleAddToCart}
+            >
+              <ShoppingCart className="md:p-[2px] md:w-10 w-4 p-0 " />
+            </Button>
           </div>
         </div>
-
-        <span className="md:text-base text-xs">Chair</span>
-        <div className="flex justify-between">
-          <span className="text-primary font-bold md:text-xl text-md">
-            ${price}
-          </span>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="p-0 rounded-full aspect-square md:w-10 md:h-10 w-8 h-8"
-            onClick={() => addCart({ storeId, productId, quantity: 1 })}
-          >
-            <ShoppingCart className="md:p-[2px] md:w-10 w-4 p-0 " />
-          </Button>
-        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);

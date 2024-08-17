@@ -1,6 +1,5 @@
 "use client";
 
-import { Description } from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { FaArrowRightLong } from "react-icons/fa6";

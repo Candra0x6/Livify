@@ -15,6 +15,7 @@ import { BiDollar } from "react-icons/bi";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 
+import { useProductActions } from "@/hooks/useProductAction";
 import {
   type productPayload,
   productSchema,
@@ -43,37 +44,8 @@ export async function getCategory() {
   return data;
 }
 
-export async function addProduct(data: productPayload) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("categoryId", data.categoryId);
-  formData.append("price", data.price.toString());
-  formData.append("stock", data.stock.toString());
-  if (data.description) {
-    formData.append("description", data.description);
-  }
-
-  data.images.forEach((image, index) => {
-    if (image.file instanceof File) {
-      formData.append(`image${index}`, image.file, image.name);
-    }
-  });
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product/new`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to add product");
-  }
-
-  return res;
-}
 export const AddProductForm: React.FC = () => {
+  const { createProduct } = useProductActions();
   const form = useForm<productPayload>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -97,9 +69,8 @@ export const AddProductForm: React.FC = () => {
   }, []);
   const onSubmit = async (values: productPayload) => {
     try {
-      const postProduct = await addProduct(values);
+      const postProduct = await createProduct(values);
       const data = await postProduct.json();
-
       if (data) {
         alert("Success Create Product");
       }
@@ -186,7 +157,6 @@ export const AddProductForm: React.FC = () => {
                     {category &&
                       category.categories.length > 0 &&
                       category.categories.map((item, i) => (
-                        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                         <SelectItem
                           key={item.id}
                           className="text-sm bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"
@@ -225,7 +195,6 @@ export const AddProductForm: React.FC = () => {
                     {category &&
                       category.categories.length > 0 &&
                       category.categories.map((item, i) => (
-                        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                         <SelectItem
                           key={item.id}
                           className="text-sm bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"

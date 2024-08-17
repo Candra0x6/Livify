@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useSession } from "@/hooks/auth/useSession";
 import { createSession } from "@/lib/auth/auth";
 import { signUp } from "@/utils/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,7 @@ import { Heading } from "../ui/heading";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Text } from "../ui/text";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -44,17 +46,18 @@ export interface formData extends z.infer<typeof formSchema> {}
 
 export const SignUpForm: React.FC = () => {
   const router = useRouter();
+  const { newSession } = useSession();
   const [toggleButton, setToggleButton] = useState(false);
 
   const [passwordType, setPasswordType] = useState<"password" | "text">(
-    "password"
+    "password",
   );
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const togglePassword = useCallback(
     (type: "password" | "text") => {
       setPasswordType(type);
     },
-    [passwordType]
+    [passwordType],
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,27 +81,16 @@ export const SignUpForm: React.FC = () => {
       } = await signUpAction.json();
 
       if (userData?.user) {
-        // Panggil API Route untuk membuat sesi
-        const response = await fetch(
-          "http://localhost:3000/api/v1/auth/session/new",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: userData.user.id }),
-          }
-        );
-
-        console.log(response.status);
-        if (response.ok) {
+        const response = newSession(userData.user.id);
+        if ((await response).ok) {
+          toast.success("Successfully created account 🥳");
           if (userData.user.role === "SELLER") {
             router.push(`/sign-up/store/create?userId=${userData.user.id}`);
           } else {
             router.push("/");
           }
         } else {
-          console.error("Gagal membuat sesi");
+          toast.error("Something went wrong, try again later 😬");
         }
       }
     } catch (error) {

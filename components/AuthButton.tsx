@@ -11,18 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getSession } from "@/lib/auth/auth";
 import { signOut } from "@/utils/auth/auth";
-import { createClient } from "@/utils/supabase/client";
 import type { User } from "@prisma/client";
 import { UserIcon } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { IconType } from "react-icons";
 import { CgProfile } from "react-icons/cg";
 import { IoLogInOutline } from "react-icons/io5";
 import { TbLayoutDashboard } from "react-icons/tb";
-import UserDefaultAvatarProfile from "../public/images/user-default-avatar.png";
 import { Button } from "./ui/button";
-import { Text } from "./ui/text";
 
 export interface IconMenuListProps {
   name: string;
@@ -37,7 +33,7 @@ const accountMenuList: IconMenuListProps[] = [
   },
   {
     name: "Dashboard",
-    href: "/seller/dashboard",
+    href: "/seller/dashboard/store",
     icon: TbLayoutDashboard,
   },
 ];
@@ -55,7 +51,7 @@ export default function AuthButton(user: { user: User | undefined }) {
       router.push("/sign-in");
     }
   };
-  return user ? (
+  return user.user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
@@ -99,12 +95,13 @@ export default function AuthButton(user: { user: User | undefined }) {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <button
+    <Button
       type="button"
+      variant="default"
       onClick={signOutAction}
       className="flex gap-x-2 items-center"
     >
-      <Text className="text-white font-JosefinSemibold text-md ">Login</Text>
-    </button>
+      Login
+    </Button>
   );
 }

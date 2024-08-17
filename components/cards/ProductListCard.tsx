@@ -1,27 +1,29 @@
-import type { FC } from "react";
+import { useProductActions } from "@/hooks/useProductAction";
+import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
+import { type FC, type ReactNode, memo } from "react";
 import { FaStar } from "react-icons/fa6";
 import { FiHeart } from "react-icons/fi";
 import { LuShoppingCart } from "react-icons/lu";
-import { PiMagnifyingGlass } from "react-icons/pi";
 import { Button } from "../ui/button";
-import { ObjectColors } from "../ui/card";
 import Flex from "../ui/flex";
 import type { ProductDetailsProps } from "./ProductCard";
 
-const ProductListCard: FC<ProductDetailsProps> = ({
-  name,
-  image,
-  color,
-  price,
-  description,
-}) => {
+const ProductListCard: FC<ProductDetailsProps> = memo(({ data }): ReactNode => {
+  const { addCart, addWishlist } = useProductActions();
+  const handleAddToCart = () =>
+    addCart({ productId: data.id, storeId: data.storeId, quantity: 1 });
+  const handleAddToWishlist = () =>
+    addWishlist({ productId: data.id, storeId: data.storeId });
   return (
     <div className="group/card border duration-300 transition-all sm:w-full sm:h-full h-[150px] group cursor-pointer relative overflow-hidden flex sm:gap-x-10 gap-x-5 bg-white shadow-sh-card rounded-xl sm:p-4 p-3">
       <div className="relative bg-[#F6F7FB] md:w-36 md:h-36 w-[7.8rem] h-[7.8rem]  aspect-square">
-        <img
+        <Image
+          loading="lazy"
           fill
-          src={image}
-          alt="l"
+          // @ts-ignore
+          src={data.images[0]}
+          alt={data.name}
           className="w-full h-full aspect-square rounded-xl"
         />
       </div>
@@ -30,8 +32,11 @@ const ProductListCard: FC<ProductDetailsProps> = ({
           <Flex justify="space-between" align="center">
             <div className="w-full">
               <div className="flex w-full justify-between">
-                <h1 className="sm:text-2xl text-lg font-semibold">{name} </h1>
+                <h1 className="sm:text-2xl text-lg font-semibold">
+                  {data.name}{" "}
+                </h1>
               </div>
+              {/* category */}
               <span className="sm:text-base text-sm">Chair</span>
             </div>
           </Flex>
@@ -44,13 +49,15 @@ const ProductListCard: FC<ProductDetailsProps> = ({
         </div>
         <div className="w-full flex justify-between ">
           <span className="text-primary font-bold sm:text-xl text-md items-end flex">
-            $36.21
+            {/*@ts-expect-error */}
+            {formatPrice(Number.parseFloat(data.price))}
           </span>
           <div className="flex gap-x-2 items-center">
             <Button
               size="icon"
               variant="secondary"
               className="rounded-full lg:w-10 lg:h-10  w-7 h-7"
+              onClick={handleAddToCart}
             >
               <LuShoppingCart className="text-primarytext lg:text-2xl" />
             </Button>
@@ -58,6 +65,7 @@ const ProductListCard: FC<ProductDetailsProps> = ({
               size="icon"
               variant="secondary"
               className="rounded-full lg:w-10 lg:h-10 w-7 h-7"
+              onClick={handleAddToWishlist}
             >
               <FiHeart className=" lg:text-lg" />
             </Button>
@@ -66,6 +74,6 @@ const ProductListCard: FC<ProductDetailsProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default ProductListCard;

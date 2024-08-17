@@ -51,16 +51,16 @@ const DashboardMenuList: SidebarNavigation[] = [
     name: "Store",
     href: "/seller/dashboard/store/profile",
     icon: MdOutlineStorefront,
-    segment: "store",
+    segment: "profile",
   },
 ];
 const DashboardPurcesList = [
   {
     id: 0,
     name: "Orders",
-    href: "/customer/dashboard/orders",
+    href: "/seller/dashboard/purches/orders",
     icon: LuClipboardList,
-    segment: "purches",
+    segment: null,
   },
 ];
 const SidebarNav: React.FC = () => {
@@ -69,12 +69,11 @@ const SidebarNav: React.FC = () => {
   const path = usePathname();
   const [indicatorStyle, setIndicatorStyle] = useState({});
   const navRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const updateIndicator = () => {
       if (navRef.current) {
         const activeItem = navRef.current.querySelector(
-          `[data-segment="${segment ?? ""}"]`
+          `[data-segment="${segment ?? ""}"]`,
         ) as HTMLElement;
 
         if (activeItem) {
@@ -82,9 +81,8 @@ const SidebarNav: React.FC = () => {
             top: `${activeItem.offsetTop}px`,
           });
         } else {
-          // Jika tidak ada item aktif, atur indikator ke item pertama
           const firstItem = navRef.current.querySelector(
-            ":scope > div:not([data-segment])"
+            ":scope > div:not([data-segment])",
           ) as HTMLElement;
 
           if (firstItem) {
@@ -105,8 +103,12 @@ const SidebarNav: React.FC = () => {
 
   return (
     <div className="w-full h-full pt-3 bg-white shadow-sh-card rounded-lg relative md:flex md:flex-col hidden">
-      <div className="hidden md:flex mx-auto w-[80%]">
-        <Image src={logo} alt="Livify." className="w-full" />
+      <div className="hidden md:flex mx-auto w-full">
+        <Image
+          src={logo}
+          alt="Livify."
+          className="md:w-full xl:w-[70%] mx-auto"
+        />
       </div>
       <div className="grid grid-rows-4 w-full relative" ref={navRef}>
         {(path.includes("/seller/dashboard/store")

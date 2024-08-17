@@ -10,31 +10,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getSession } from "@/lib/auth/auth";
+import { useStoreAction } from "@/hooks/useStoreAction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Store } from "@prisma/client";
-import { redirect, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
-async function postUpdateStore(data: AddStoreForm, storeId: string) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("description", data.description || "");
-  if (data.image) {
-    formData.append("image", data.image);
-  }
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}/edit`,
-    {
-      method: "PATCH",
-      body: formData,
-    }
-  );
-  return res;
-}
 const formSchema = z.object({
   name: z.string().min(3, {
     message: "*Store name must be at least 3 characters long",
@@ -45,9 +29,8 @@ const formSchema = z.object({
 
 export default interface AddStoreForm extends z.infer<typeof formSchema> {}
 export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
-  const router = useRouter();
+  const { editStore } = useStoreAction();
   const [currentImage, setCurrentImage] = useState<string>();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,8 +39,6 @@ export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
       image: store?.image as string,
     },
   });
-
-  console.log(store);
 
   const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageFile = e.target.files;
@@ -71,7 +52,7 @@ export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
   };
   const onSubmit = async (values: AddStoreForm) => {
     try {
-      await postUpdateStore(values, store.id);
+      await editStore(values, store.id);
     } catch (err) {
       console.log(err);
     }
@@ -81,7 +62,10 @@ export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
       {store && (
         <>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5 mb-2 "
+            >
               <FormField
                 control={form.control}
                 name="image"
@@ -136,7 +120,7 @@ export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
                             className="hidden"
                             accept="image/*"
                             onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>
+                              e: React.ChangeEvent<HTMLInputElement>,
                             ) => {
                               const file = e.target.files;
                               if (file && file.length > 0) {

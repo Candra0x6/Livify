@@ -8,20 +8,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createSession, getSession } from "@/lib/auth/auth";
+import { useSession } from "@/hooks/auth/useSession";
 import { signIn } from "@/utils/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cookies } from "next/headers";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { AiOutlineEye } from "react-icons/ai";
-import { AiOutlineEyeInvisible } from "react-icons/ai";
 import { MdOutlineLock, MdOutlineMail } from "react-icons/md";
 import { z } from "zod";
 import { PasswordToggle } from "../PasswordToggle";
-import { Heading } from "../ui/heading";
 import { Text } from "../ui/text";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -37,17 +34,18 @@ export const SignInForm: React.FC<{ cookie: string | undefined }> = ({
   cookie,
 }) => {
   const router = useRouter();
+  const { newSession } = useSession();
   const [toggleButton, setToggleButton] = useState(false);
 
   const [passwordType, setPasswordType] = useState<"password" | "text">(
-    "password"
+    "password",
   );
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const togglePassword = useCallback(
     (type: "password" | "text") => {
       setPasswordType(type);
     },
-    [passwordType]
+    [passwordType],
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,33 +61,25 @@ export const SignInForm: React.FC<{ cookie: string | undefined }> = ({
       setToggleButton(true);
       const signInAction = await signIn(data);
       if (cookie) {
-        alert("You Already Sign-In");
+        toast.error("You already Sign-In");
         router.push("/");
       } else {
         if (signInAction.ok) {
           const userData = await signInAction.json();
           if (userData) {
-            const response = await fetch(
-              "http://localhost:3000/api/v1/auth/session/new",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ userId: userData.user.id }),
-              }
-            );
+            const response = newSession(userData.user.id);
 
-            if (response.ok) {
+            if ((await response).ok) {
+              toast.success("Successfully Login");
               router.push("/");
             } else {
-              alert("Eror create session, try sign in again");
+              toast.error("Something went wrong, try again later");
             }
           }
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       setToggleButton(false);
     }

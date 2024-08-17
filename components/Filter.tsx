@@ -1,5 +1,9 @@
-import { MenuIcon } from "lucide-react";
-import React, { type FC } from "react";
+import type { queryPayload } from "@/lib/validators/productSchema";
+import { fetchCategory } from "@/services/api/productsApi";
+import type { Category } from "@prisma/client";
+import { useRouter, useSearchParams } from "next/navigation";
+import type React from "react";
+import { type FC, useEffect, useState } from "react";
 import { IoFilter } from "react-icons/io5";
 import {
   Accordion,
@@ -8,8 +12,6 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
 import {
   Sheet,
   SheetContent,
@@ -18,9 +20,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Slider } from "./ui/slider";
 
-export const MobileFilter: FC = () => {
+type props = {
+  query: queryPayload;
+  setQuery: React.Dispatch<React.SetStateAction<queryPayload>>;
+};
+export const MobileFilter: FC<props> = ({ query, setQuery }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -44,7 +49,7 @@ export const MobileFilter: FC = () => {
           </SheetHeader>
 
           <div className="text-sm">
-            <FilterElement />
+            <FilterElement query={query} setQuery={setQuery} />
           </div>
         </aside>
       </SheetContent>
@@ -52,7 +57,18 @@ export const MobileFilter: FC = () => {
   );
 };
 
-export const FilterElement: FC = () => {
+export const FilterElement: FC<props> = ({ query, setQuery }) => {
+  const searchParam = useSearchParams();
+  const router = useRouter();
+  const params = new URLSearchParams(searchParam);
+  const [category, setCategory] = useState<{ categories: Category[] }>();
+  useEffect(() => {
+    const getCategory = async () => {
+      const data = await fetchCategory();
+      setCategory(data);
+    };
+    getCategory();
+  }, []);
   return (
     <Accordion type="single" className="space-y-5 w-full" collapsible>
       <AccordionItem
@@ -63,64 +79,86 @@ export const FilterElement: FC = () => {
           Category
         </AccordionTrigger>
         <AccordionContent>
-          <div className="grid gap-2">
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />
-              Clothing
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />
-              Accessories
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />
-              Electronics
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />
-              Home & Garden
-            </Label>
+          <div className="grid grid-flow-row gap-2">
+            {category &&
+              category.categories.length > 0 &&
+              category.categories.map((item) => (
+                <Button
+                  key={item.id}
+                  variant="ghost"
+                  onClick={() => {
+                    params.set(
+                      "categoryId",
+                      item.id === query.categoryId ? "" : item.id
+                    );
+                    router.push(`?${params.toString()}`);
+                    setQuery({
+                      ...query,
+                      categoryId: item.id === query.categoryId ? "" : item.id,
+                    });
+                  }}
+                  value="createdAt"
+                  className={`flex justify-start ${
+                    query.categoryId === item.id && "bg-accent"
+                  }`}
+                >
+                  <h1>{item.name}</h1>
+                </Button>
+              ))}
           </div>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem
-        value="price"
+        value="sortBy"
         className="bg-white shadow-sh-card rounded-xl px-4"
       >
         <AccordionTrigger className="text-lg font-medium">
-          Price
+          SoryBy
         </AccordionTrigger>
         <AccordionContent>
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <span>$0</span>
-              <span>$100</span>
-            </div>
-            <Slider min={0} max={100} step={10} defaultValue={[0, 100]} />
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem
-        value="rating"
-        className="bg-white shadow-sh-card rounded-xl px-4"
-      >
-        <AccordionTrigger className="text-lg font-medium">
-          Rating
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="grid gap-2">
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />4 stars and above
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />3 stars and above
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />2 stars and above
-            </Label>
-            <Label className="flex items-center gap-2 font-normal">
-              <Checkbox />1 star and above
-            </Label>
+          <div className="grid gap-y-1">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                params.set("sortBy", "createdAt");
+                router.push(`?${params.toString()}`);
+                setQuery({ ...query, sortBy: "createdAt" });
+              }}
+              value="createdAt"
+              className={`flex justify-start ${
+                query.sortBy === "createdAt" && "bg-accent"
+              }`}
+            >
+              <h1>createdAt</h1>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                params.set("sortBy", "name");
+                router.push(`?${params.toString()}`);
+                setQuery({ ...query, sortBy: "name" });
+              }}
+              value="name"
+              className={`flex justify-start ${
+                query.sortBy === "name" && "bg-accent"
+              }`}
+            >
+              <h1>Name</h1>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                params.set("sortBy", "price");
+                router.push(`?${params.toString()}`);
+                setQuery({ ...query, sortBy: "price" });
+              }}
+              value="price"
+              className={`flex justify-start ${
+                query.sortBy === "price" && "bg-accent"
+              }`}
+            >
+              <h1>Price</h1>
+            </Button>
           </div>
         </AccordionContent>
       </AccordionItem>

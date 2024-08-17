@@ -23,6 +23,8 @@ import { BiDollar } from "react-icons/bi";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 
+import { useProductActions } from "@/hooks/useProductAction";
+import { fetchCategory } from "@/services/api/productsApi";
 import type { Category, Product } from "@prisma/client";
 import { useEffect, useState } from "react";
 import {
@@ -32,17 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-export async function getCategory() {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/category`,
-    {
-      method: "GET",
-    }
-  );
-  const data = await response.json();
-  return data;
-}
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -154,42 +145,10 @@ export const FileUpload = <T extends FieldValues>({
   );
 };
 
-export async function postEditedProduct(
-  data: productEditPayload,
-  productId: string
-) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("categoryId", data.categoryId);
-  formData.append("price", data.price.toString());
-  if (data.description) {
-    formData.append("description", data.description);
-  }
-  formData.append("stock", data.stock.toString());
-  data.images.forEach((image, index) => {
-    if (typeof image === "string") {
-      formData.append(`existingImage${index}`, image);
-    } else {
-      formData.append(`newImage${index}`, image.file, image.name);
-    }
-  });
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product/${productId}/edit`,
-    {
-      method: "PATCH",
-      body: formData,
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to update product");
-  }
-
-  return res.json();
-}
-
-export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
+export const EditProductForm: React.FC<{ data: Product | undefined }> = ({
+  data,
+}) => {
+  const { editProduct } = useProductActions();
   const form = useForm<productEditPayload>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -207,7 +166,7 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
 
   useEffect(() => {
     async function fetchData() {
-      const categoryData = await getCategory();
+      const categoryData = await fetchCategory();
       setCategory(categoryData);
     }
     fetchData();
@@ -215,12 +174,10 @@ export const EditProductForm: React.FC<{ data: Product }> = ({ data }) => {
 
   const onSubmit = async (values: productEditPayload) => {
     try {
-      const result = await postEditedProduct(values, data?.id);
+      const result = await editProduct(values, data?.id as string);
       console.log("Product updated:", result);
-      // Handle success (e.g., show a success message, redirect)
     } catch (error) {
       console.error("Error updating product:", error);
-      // Handle error (e.g., show an error message)
     }
   };
 

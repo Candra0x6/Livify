@@ -5,7 +5,7 @@ import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { AppWindowMac } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiWindows } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { IoLogoWindows } from "react-icons/io5";
@@ -13,10 +13,25 @@ import { MdOutlineDesktopWindows } from "react-icons/md";
 import { PiWindowsLogo, PiWindowsLogoFill } from "react-icons/pi";
 import { TbLocationSearch } from "react-icons/tb";
 import { Button } from "./ui/button";
+import {
+  fetchProductsBySearch,
+  ProductsResponse,
+} from "@/services/api/productsApi";
+import slugify from "@/hooks/slugify";
 
 export default function SearchModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [data, setData] = useState<{
+    data: [{ category: string; products: ProductsResponse[] }];
+  }>();
+  const [keyword, setKeyword] = useState<string>("");
+  const searchRef = useRef<HTMLInputElement>(null);
 
+  const handleSearch = () => {
+    if (searchRef.current) {
+      setKeyword(searchRef.current.value);
+    }
+  };
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "/" && !isOpen) {
@@ -35,6 +50,33 @@ export default function SearchModal() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    const getProductsSearch = async () => {
+      try {
+        const data = await fetchProductsBySearch({
+          query: keyword as string,
+        });
+        setData(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    let timeoutId: NodeJS.Timeout;
+
+    if (keyword && keyword.trim() !== "") {
+      timeoutId = setTimeout(() => {
+        getProductsSearch();
+      }, 500);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [keyword]);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -72,6 +114,8 @@ export default function SearchModal() {
               <CiSearch className="ml-4 h-5 w-5 shrink-0 text-slate-500" />
 
               <input
+                ref={searchRef}
+                onChange={handleSearch}
                 id="search-modal"
                 className="[&::-webkit-search-decoration]:none [&::-webkit-search-results-button]:none [&::-webkit-search-results-decoration]:none [&::-webkit-search-cancel-button]:hidden w-full appearance-none border-0 bg-white py-3 pl-2 pr-4 text-sm placeholder-slate-400 text-black focus:outline-none"
                 type="search"
@@ -82,23 +126,33 @@ export default function SearchModal() {
           <ScrollArea.Root className="max-h-[calc(85vh-44px)]">
             <ScrollArea.Viewport className="h-full w-full">
               <div className="space-y-4 px-2 py-4">
-                <div>
-                  <div className="mb-2 px-2 text-xs font-semibold uppercase text-gray-400">
-                    Suggestions
-                  </div>
-                  <ul>
-                    <li>
-                      <Link
-                        className="flex items-center rounded-lg px-2 py-1 text-sm leading-6 text-slate-700 outline-none focus-within:bg-slate-100 hover:bg-slate-100"
-                        href="#0"
-                      >
-                        <TbLocationSearch className="mr-3 h-4 w-4 shrink-0 fill-slate-400 text-slate-400" />
+                {data &&
+                  data.data.length > 0 &&
+                  data.data &&
+                  data.data.map((item, i) => (
+                    <div key={i}>
+                      <div className="mb-2 px-2 text-xs font-semibold uppercase text-gray-400">
+                        {item.products.length > 0 && item.category}
+                      </div>
+                      <ul>
+                        <li>
+                          {item.products &&
+                            item.products.length > 0 &&
+                            item.products.map((product) => (
+                              <Link
+                                key={product.id}
+                                className="flex items-center rounded-lg px-2 py-1 text-sm leading-6 text-slate-700 outline-none focus-within:bg-slate-100 hover:bg-slate-100"
+                                href={`/products/${slugify(product.Store.name)}/${product.slug}?productId=${product.id}`}
+                              >
+                                <TbLocationSearch className="mr-3 h-4 w-4 shrink-0 fill-slate-400 text-slate-400" />
 
-                        <span>Flexbox and Grid</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
+                                <span>{product.name}</span>
+                              </Link>
+                            ))}
+                        </li>
+                      </ul>
+                    </div>
+                  ))}
               </div>
             </ScrollArea.Viewport>
             <ScrollArea.Scrollbar
