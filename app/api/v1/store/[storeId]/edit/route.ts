@@ -63,8 +63,3 @@ async function extractStoreData(formData: FormData): Promise<storePayload> {
 	const image = formData.get("image") as string;
 	return { name, description, image };
 }
-export const config = {
-	api: {
-		bodyParser: false,
-	},
-};
