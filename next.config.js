@@ -5,6 +5,11 @@ const nextConfig = {
 	images: {
 		domains: ["vqeowfcbngeyipwzpkul.supabase.co"],
 	},
+	experimental: {
+		fontLoaders: [
+			{ loader: "@next/font/google", options: { subsets: ["latin"] } },
+		],
+	},
 };
 
 module.exports = nextConfig;
