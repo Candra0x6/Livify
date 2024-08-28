@@ -65,8 +65,3 @@ export async function extractNewProduct(
 
 	return { name, description, categoryId, price, images, stock };
 }
-export const config = {
-	api: {
-		bodyParser: false,
-	},
-};
