@@ -200,6 +200,25 @@ export async function extractEditProduct(
   };
 }
 
+export async function extractNewProduct(
+  formData: FormData,
+): Promise<productPayload> {
+  const name = formData.get("name") as string;
+  const description = formData.get("description") as string | undefined;
+  const categoryId = formData.get("categoryId") as string;
+  const price = formData.get("price") as string;
+  const stock = formData.get("stock") as unknown as number
+  const images: Blob[] = [];
+
+  formData.forEach((value, key) => {
+    if (key.startsWith("image") && value instanceof Blob) {
+      images.push(value);
+    }
+  });
+
+  return { name, description, categoryId, price, images, stock };
+}
+
 export async function getProductById(
   prisma: PrismaClient,
   productId: string,
@@ -226,8 +245,8 @@ export async function deleteProduct(
 }
 interface searchProductsType {
   products:
-    | ProductsResponse[]
-    | { category: string; products: ProductsResponse[] };
+  | ProductsResponse[]
+  | { category: string; products: ProductsResponse[] };
 }
 
 export async function mainSearch(
@@ -244,14 +263,14 @@ export async function mainSearch(
   const includeRelations =
     format !== "simple"
       ? {
-          Category: true,
-          Store: true,
-          Wishlist: true,
-        }
+        Category: true,
+        Store: true,
+        Wishlist: true,
+      }
       : {
-          Category: true,
-          Store: true,
-        };
+        Category: true,
+        Store: true,
+      };
   const products = await prisma.product.findMany({
     where: {
       name: {
