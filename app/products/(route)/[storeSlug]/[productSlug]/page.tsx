@@ -30,10 +30,10 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import CartIcon from "../../../../../public/icons/cart.svg";
 import { PaymentDialog } from "./component/payment-dialog";
 export interface productBody {
-  productId: string | undefined;
-  price: number | undefined;
-  quantity: number | undefined;
-  storeId: string | undefined;
+  productId: string;
+  price: number;
+  quantity: number;
+  storeId: string;
 }
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -82,7 +82,7 @@ export default function ProductDetails() {
   const handleOrder = async () => {
     try {
       const prodcut = [data];
-      const productBodies: productBody[] | undefined = prodcut?.map((item) => ({
+      const productBodies: productBody[] = prodcut?.map((item) => ({
         productId: item?.id,
         price: item?.price as unknown as number,
         quantity: 1,

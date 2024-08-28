@@ -12,7 +12,6 @@ export async function POST(request: Request) {
       orderAddress,
     }: { orderItems: productBody[]; orderAddress: string } =
       await request.json();
-    console.log(orderItems);
     if (!session?.userId || typeof session.userId !== "string") {
       return NextResponse.json(
         { message: "Valid User ID is required" },
@@ -31,8 +30,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const totalPrice = orderItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+    const totalPrice = orderItems?.reduce(
+      (total, item) => total + item?.price * item?.quantity,
       0,
     );
     const createOrder = await prisma.order.create({
