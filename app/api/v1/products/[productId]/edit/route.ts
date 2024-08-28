@@ -1,14 +1,12 @@
 import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { supabase } from "@/lib/supabase";
-import { productSchema } from "@/lib/validators/productSchema";
 import { errorHandler } from "@/middleware";
 import { uploadImages } from "@/services/db/imageUploadService";
 import { extractEditProduct, updateProduct } from "@/services/db/productService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
-import { string } from "zod";
 
 export async function PATCH(
 	request: NextRequest,
@@ -43,9 +41,3 @@ export async function PATCH(
 		return errorHandler(error);
 	}
 }
-
-export const config = {
-	api: {
-		bodyParser: false,
-	},
-};
