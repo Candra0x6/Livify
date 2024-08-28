@@ -109,7 +109,10 @@ export default function ProductsPage() {
               }}
             >
               <SelectTrigger className="bg-white rounded-xl shadow-sh-card">
-                <SelectValue placeholder={view || "view"} />
+                <SelectValue
+                  placeholder={view || "view"}
+                  defaultValue="grid-view"
+                />
               </SelectTrigger>
               <SelectContent className="bg-white rounded-xl shadow-sh-card">
                 <SelectItem value="grid-view">

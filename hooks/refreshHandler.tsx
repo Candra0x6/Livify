@@ -10,14 +10,16 @@ export interface sessionEror extends Session {
 interface propsType {
   initialSession: sessionEror;
   refreshToken: RefreshSession;
+  cookie: string;
 }
 export default function RefreshHandler({
   initialSession,
   refreshToken,
+  cookie,
 }: propsType) {
-  console.log(initialSession);
   const [session, setSession] = useState(initialSession);
   const router = useRouter();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (session.message === "Expire") {
       const refreshSession = async () => {
@@ -47,7 +49,7 @@ export default function RefreshHandler({
 
       refreshSession();
     }
-  }, [session, refreshToken, router]);
+  }, [session, refreshToken, router, cookie]);
 
   return null;
 }

@@ -29,11 +29,11 @@ function OrderCard({ data }: { data: props }) {
             <div className="">
               <h1 className="font-semibold text-md">Transaction</h1>
               <span className="text-textSecondary text-sm">
-                {formatDate(data.createdAt)}
+                {formatDate(data?.createdAt)}
               </span>
             </div>
           </div>
-          <div className="">{statusBadge(data.status)}</div>
+          <div className="">{statusBadge(data?.status)}</div>
         </div>
         <div className="max-h-[60%] h-full w-full">
           {data &&
@@ -88,7 +88,7 @@ function OrderCard({ data }: { data: props }) {
         </div>
         <div className="max-h-[20%] h-full">
           {/* @ts-ignore */}
-          {formatPrice(Number.parseFloat(data.totalPrice))}
+          {formatPrice(Number.parseFloat(data?.totalPrice))}
         </div>
       </div>
     </div>

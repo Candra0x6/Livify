@@ -11,11 +11,11 @@ export const fetchStoreOrders = async ({
   status?: ORDER_STATUS | undefined;
 }): Promise<
   | {
-      store: {
-        orders: OrderResponse[];
-        total: number;
-      };
-    }
+    store: {
+      orders: OrderResponse[];
+      total: number;
+    };
+  }
   | undefined
 > => {
   try {
@@ -71,11 +71,11 @@ export const fetchUserOrders = async ({
   status?: ORDER_STATUS | undefined;
 }): Promise<
   | {
-      data: {
-        orders: UserOrderResponse[];
-        total: number;
-      };
-    }
+    data: {
+      orders: UserOrderResponse[];
+      total: number;
+    };
+  }
   | undefined
 > => {
   try {
@@ -108,10 +108,8 @@ export interface UserOrderResponse extends Order {
 
 export const fetchOrderById = async (
   orderId: string,
-): Promise<{ order: orderType } | undefined> => {
-  if (!orderId) {
-    return;
-  }
+): Promise<{ order: orderType }> => {
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/order/${orderId}`,
@@ -138,11 +136,11 @@ export const fetchCustomerOrdersSearch = async ({
   status?: ORDER_STATUS | undefined;
 }): Promise<
   | {
-      data: {
-        orders: UserOrderResponse[];
-        total: number;
-      };
-    }
+    data: {
+      orders: UserOrderResponse[];
+      total: number;
+    };
+  }
   | undefined
 > => {
   try {

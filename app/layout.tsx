@@ -4,25 +4,29 @@ import Footer from "@/components/element/Footer";
 import { Navbar } from "@/components/element/Navbar";
 import { getUserDetail } from "@/hooks/auth/useUserDetail";
 import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
-import { getRefresh, getSession, refreshSession } from "@/lib/auth/auth";
+import { getRefresh, getSession } from "@/lib/auth/auth";
 import { cn } from "@/lib/utils";
 import { getUserCredentials } from "@/utils/auth/auth";
 import type { RefreshSession, Session, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
+import { cookies } from "next/headers";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./AuthProvide";
+
 const poppins = Poppins({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-heading",
-  weight: ["400", "500", "600", "700", "800", "900"], // Add the weights you need
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-body",
-  weight: ["200", "300", "400", "600", "700", "800", "900"], // Add the weights you need
+  weight: ["200", "300", "400", "600", "700", "800", "900"],
 });
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -38,6 +42,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const sessionCookies = cookies().get("session")?.value;
+  const refreshCookies = cookies().get("refresh")?.value;
   const session = await getSession();
   const refresh = await getRefresh();
   let user: { user: User } | null = null;
@@ -45,23 +51,27 @@ export default async function RootLayout({
     const res = await getUserDetail(session.userId);
     user = res;
   }
+
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
-        {(session || refresh) && (
-          <RefreshHandler
-            initialSession={session as sessionEror}
-            refreshToken={refresh as RefreshSession}
-          />
-        )}
-        <header className="w-full bg-black">
-          <Navbar user={user?.user} />
-        </header>
-        <main>
-          <Toaster />
-          {children}
-        </main>
-        <Footer />
+        <AuthProvider session={session} user={user?.user}>
+          {(sessionCookies || refreshCookies) && (
+            <RefreshHandler
+              cookie={sessionCookies}
+              initialSession={session as sessionEror}
+              refreshToken={refresh as RefreshSession}
+            />
+          )}
+          <header className="w-full bg-black">
+            <Navbar user={user?.user} />
+          </header>
+          <main>
+            <Toaster />
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

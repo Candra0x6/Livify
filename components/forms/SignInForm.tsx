@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/app/AuthProvide";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,11 +15,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { MdOutlineLock, MdOutlineMail } from "react-icons/md";
 import { z } from "zod";
 import { PasswordToggle } from "../PasswordToggle";
 import { Text } from "../ui/text";
-import toast from "react-hot-toast";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -33,19 +34,20 @@ export interface signInData extends z.infer<typeof formSchema> {}
 export const SignInForm: React.FC<{ cookie: string | undefined }> = ({
   cookie,
 }) => {
+  const { updateAuth } = useAuth();
   const router = useRouter();
   const { newSession } = useSession();
   const [toggleButton, setToggleButton] = useState(false);
 
   const [passwordType, setPasswordType] = useState<"password" | "text">(
-    "password",
+    "password"
   );
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const togglePassword = useCallback(
     (type: "password" | "text") => {
       setPasswordType(type);
     },
-    [passwordType],
+    [passwordType]
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,13 +64,14 @@ export const SignInForm: React.FC<{ cookie: string | undefined }> = ({
       const signInAction = await signIn(data);
       if (cookie) {
         toast.error("You already Sign-In");
-        router.push("/");
+        window.location.href = "/";
       } else {
         if (signInAction.ok) {
           const userData = await signInAction.json();
           if (userData) {
             const response = newSession(userData.user.id);
-
+            const sessionData = await (await response).json();
+            updateAuth(sessionData, userData.user);
             if ((await response).ok) {
               toast.success("Successfully Login");
               router.push("/");

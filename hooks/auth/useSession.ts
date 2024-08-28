@@ -12,7 +12,6 @@ export const useSession = () => {
         body: JSON.stringify({ userId }),
       }
     );
-    const data = await response.json()
     return response
 
   }

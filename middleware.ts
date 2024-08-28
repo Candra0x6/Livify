@@ -1,12 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { ZodError } from "zod";
-import { getRefresh, getSession } from "./lib/auth/auth";
 
-import { cookies } from "next/headers";
 import { AppError } from "./utils/api/apiErrors";
 import { ApiResponse } from "./utils/api/apiResponse";
-import { getUserCredentials } from "./utils/auth/auth";
-export async function middleware(request: NextRequest) {}
+export async function middleware(request: NextRequest) { }
 
 export const config = {
 	matcher: [

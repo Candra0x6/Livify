@@ -5,7 +5,7 @@ export default async function ProductLayout({
 }) {
   return (
     <>
-      <div className="relative">{children}</div>;
+      <div className="relative min-h-screen">{children}</div>;
     </>
   );
 }

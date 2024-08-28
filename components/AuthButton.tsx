@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuth } from "@/app/AuthProvide";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSession } from "@/lib/auth/auth";
 import { signOut } from "@/utils/auth/auth";
 import type { User } from "@prisma/client";
 import { UserIcon } from "lucide-react";
@@ -25,6 +24,7 @@ export interface IconMenuListProps {
   href: string;
   icon: IconType;
 }
+
 const accountMenuList: IconMenuListProps[] = [
   {
     name: "Profile",
@@ -38,20 +38,25 @@ const accountMenuList: IconMenuListProps[] = [
   },
 ];
 
-export default function AuthButton(user: { user: User | undefined }) {
+export default function AuthButton() {
   const router = useRouter();
+  const { user, updateAuth } = useAuth(); // Gunakan hook useAuth
   const signOutAction = async () => {
     try {
-      const session = await getSession();
-
-      await signOut(session?.userId as string);
+      await signOut(user?.id as string);
+      updateAuth(null, null); // Perbarui state autentikasi
     } catch (err) {
       console.error(err);
     } finally {
       router.push("/sign-in");
     }
   };
-  return user.user ? (
+
+  const handleLogin = () => {
+    router.push("/sign-in");
+  };
+
+  return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
@@ -63,23 +68,20 @@ export default function AuthButton(user: { user: User | undefined }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-2 bg-white rounded-none">
-        <DropdownMenuLabel className="text-lg">
-          {user?.user?.name}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel className="text-lg">{user.name}</DropdownMenuLabel>
         <DropdownMenuLabel className="text-subtext2 -mt-3">
-          {user?.user?.email}
+          {user.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup className=" ">
           {accountMenuList.map((menu, i) => (
             <DropdownMenuItem
               onClick={() => router.push(menu.href)}
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              key={i}
+              key={menu.name} // Gunakan menu.name sebagai key yang unik
               className="gap-x-2 flex items-center"
             >
               <menu.icon className="text-lg" />
-              <span>{menu?.name}</span>
+              <span>{menu.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
@@ -91,14 +93,14 @@ export default function AuthButton(user: { user: User | undefined }) {
         >
           <IoLogInOutline className="text-xl" />
           <span>Sign Out</span>
-        </DropdownMenuItem>{" "}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
     <Button
       type="button"
       variant="default"
-      onClick={signOutAction}
+      onClick={handleLogin}
       className="flex gap-x-2 items-center"
     >
       Login

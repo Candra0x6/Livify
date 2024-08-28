@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/app/AuthProvide";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,10 +13,11 @@ import { useSession } from "@/hooks/auth/useSession";
 import { createSession } from "@/lib/auth/auth";
 import { signUp } from "@/utils/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineEmail } from "react-icons/md";
 import { MdOutlineLock } from "react-icons/md";
@@ -25,7 +27,6 @@ import { Heading } from "../ui/heading";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Text } from "../ui/text";
-import toast from "react-hot-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -45,19 +46,20 @@ const formSchema = z.object({
 export interface formData extends z.infer<typeof formSchema> {}
 
 export const SignUpForm: React.FC = () => {
+  const { updateAuth } = useAuth();
   const router = useRouter();
   const { newSession } = useSession();
   const [toggleButton, setToggleButton] = useState(false);
 
   const [passwordType, setPasswordType] = useState<"password" | "text">(
-    "password",
+    "password"
   );
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const togglePassword = useCallback(
     (type: "password" | "text") => {
       setPasswordType(type);
     },
-    [passwordType],
+    [passwordType]
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,15 +76,14 @@ export const SignUpForm: React.FC = () => {
       setToggleButton(true);
       const signUpAction = await signUp(formData);
       const userData: {
-        user: {
-          id: string;
-          role: string;
-        };
+        user: User;
       } = await signUpAction.json();
 
       if (userData?.user) {
         const response = newSession(userData.user.id);
         if ((await response).ok) {
+          const sessionData = await (await response).json();
+          updateAuth(sessionData, userData.user);
           toast.success("Successfully created account 🥳");
           if (userData.user.role === "SELLER") {
             router.push(`/sign-up/store/create?userId=${userData.user.id}`);

@@ -5,17 +5,29 @@ import CartSummerySkeleton from "@/components/skeletons/CartSummerySkeleton";
 import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkeletonCard";
 import { Button } from "@/components/ui/button";
 import { useCartAction } from "@/hooks/useCartAction";
+import usePayment from "@/hooks/usePayment";
 import { formatPrice } from "@/lib/utils";
 import { fetchCart } from "@/services/api/cartApi";
-import type { CartItem, ORDER_STATUS, Product } from "@prisma/client";
+import type { CartItem, Product } from "@prisma/client";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
-import React, { type ReactNode, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import EmptyCart from "../../public/svg/empty-cart.png";
+import { PaymentDialog } from "../products/(route)/[storeSlug]/[productSlug]/component/payment-dialog";
 export interface CartData extends CartItem {
   product: Product;
 }
-
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
+);
 function Cart() {
+  const { handlePayment } = usePayment();
+  const url = useSearchParams();
+  const statusPayment = url.get("redirect_status");
+
+  const [clientSecret, setClientSecret] = useState("");
   const [cart, setCart] = useState<CartData[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
@@ -27,18 +39,25 @@ function Cart() {
   const handleCheckout = async () => {
     try {
       setLoadingButton(true);
-      const data = await onCheckOut();
-      if (data.data) {
-        const response = await fetch(
-          // @ts-ignore
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/cart/${cart[0].cartId}/delete`,
-          {
-            method: "DELETE",
-          }
-        );
+      const paymentData = await handlePayment(calculateTotal() as number);
 
-        const data = await response.json();
-        return data;
+      setClientSecret(paymentData);
+      console.log(statusPayment);
+      if (statusPayment) {
+        const checkOutData = await onCheckOut();
+        console.log(checkOutData);
+        if (checkOutData.data) {
+          const response = await fetch(
+            // @ts-ignore
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/cart/${cart[0].cartId}/delete`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          const data = await response.json();
+          return data;
+        }
       }
     } catch (err) {
       setLoadingButton(true);
@@ -63,8 +82,25 @@ function Cart() {
     };
     getCartProduct();
   }, []);
+  const appearance: { theme: "stripe" } = {
+    theme: "stripe",
+  };
+  const options = {
+    clientSecret,
+    appearance,
+  };
   return (
     <div className="container mx-auto mt-36 ">
+      {clientSecret && (
+        <Elements options={options} stripe={stripePromise}>
+          <PaymentDialog
+            isOpen={clientSecret}
+            setIsOpen={setClientSecret}
+            // @ts-ignore
+            data={cart}
+          />
+        </Elements>
+      )}
       <SectionHeader title="Cart Products" description="See all your cart" />
       <div className="lg:flex lg:space-x-5 lg:space-y-0 space-y-20 mt-10">
         <div className=" lg:max-w-[60%] sm:w-full">
@@ -83,7 +119,6 @@ function Cart() {
                   />
                 ))) || (
                 <div className="w-full flex justify-center">
-                  {" "}
                   <Image src={EmptyCart} alt="Empty Cart" />{" "}
                 </div>
               )

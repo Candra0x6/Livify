@@ -29,7 +29,6 @@ interface sessionReturn extends Session {
 export async function getSession(): Promise<sessionReturn | null> {
 	try {
 		const sessionCookies = cookies().get("session")?.value;
-		console.log(sessionCookies);
 		const response = await fetch(
 			`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/session`,
 			{

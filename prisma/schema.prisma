@@ -105,23 +105,20 @@ model RefreshSession {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   password      String
-  role          Role      @default(BUYER)
+  role          Role       @default(BUYER)
   accounts      Account[]
   sessions      Session[]
   store         Store?
   address       String?
-
-  Order Order[]
-
-  Cart Cart[]
-
-  Wishlist Wishlist[]
+  Order         Order[]
+  Cart          Cart[]
+  Wishlist      Wishlist[]
 }
 
 model Order {

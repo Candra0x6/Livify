@@ -1,5 +1,10 @@
 "use client";
 
+import slugify from "@/hooks/slugify";
+import {
+  type ProductsResponse,
+  fetchProductsBySearch,
+} from "@/services/api/productsApi";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
@@ -13,11 +18,6 @@ import { MdOutlineDesktopWindows } from "react-icons/md";
 import { PiWindowsLogo, PiWindowsLogoFill } from "react-icons/pi";
 import { TbLocationSearch } from "react-icons/tb";
 import { Button } from "./ui/button";
-import {
-  fetchProductsBySearch,
-  ProductsResponse,
-} from "@/services/api/productsApi";
-import slugify from "@/hooks/slugify";
 
 export default function SearchModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -126,9 +126,8 @@ export default function SearchModal() {
           <ScrollArea.Root className="max-h-[calc(85vh-44px)]">
             <ScrollArea.Viewport className="h-full w-full">
               <div className="space-y-4 px-2 py-4">
-                {data &&
+                {data?.data &&
                   data.data.length > 0 &&
-                  data.data &&
                   data.data.map((item, i) => (
                     <div key={i}>
                       <div className="mb-2 px-2 text-xs font-semibold uppercase text-gray-400">
@@ -142,7 +141,9 @@ export default function SearchModal() {
                               <Link
                                 key={product.id}
                                 className="flex items-center rounded-lg px-2 py-1 text-sm leading-6 text-slate-700 outline-none focus-within:bg-slate-100 hover:bg-slate-100"
-                                href={`/products/${slugify(product.Store.name)}/${product.slug}?productId=${product.id}`}
+                                href={`/products/${slugify(
+                                  product.Store.name
+                                )}/${product.slug}?productId=${product.id}`}
                               >
                                 <TbLocationSearch className="mr-3 h-4 w-4 shrink-0 fill-slate-400 text-slate-400" />
 
