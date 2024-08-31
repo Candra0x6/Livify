@@ -9,9 +9,10 @@ const nextConfig = {
 			{ loader: "@next/font/google", options: { subsets: ["latin"] } },
 		],
 	},
-	publicRuntimeConfig: {
-		baseURL:
-			process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`,
+	env: {
+		NEXT_PUBLIC_BASE_URL: process.env.VERCEL_URL
+			? `https://${process.env.VERCEL_URL}`
+			: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
 	},
 };
 
