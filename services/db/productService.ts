@@ -1,11 +1,11 @@
 // src/services/productService.ts
 import type { productEditPayload } from "@/components/forms/EditProduct";
 import slugify from "@/hooks/slugify";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import type { productPayload } from "@/lib/validators/productSchema";
 import type { searchQueryPayload } from "@/lib/validators/searchParamsSchema";
 import type { Category, Prisma, PrismaClient, Product } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
-import type { ProductsResponse } from "../api/productsApi";
 
 export interface ProductsParams {
   page?: number;
@@ -18,7 +18,7 @@ export interface ProductsParams {
 export async function getAllProducts(
   prisma: PrismaClient,
   params: ProductsParams = {},
-): Promise<{ products: ProductsResponse[]; total: number }> {
+): Promise<{ products: ProductDetails[]; total: number }> {
   const {
     page = 1,
     limit = 10,
@@ -112,7 +112,7 @@ export async function getRecommendationProducts(
   prisma: PrismaClient,
   productId: string,
   params: ProductsParams = {},
-): Promise<{ products: ProductsResponse[]; total: number }> {
+): Promise<{ products: ProductDetails[]; total: number }> {
   const {
     page = 1,
     limit = 10,
@@ -245,8 +245,8 @@ export async function deleteProduct(
 }
 interface searchProductsType {
   products:
-  | ProductsResponse[]
-  | { category: string; products: ProductsResponse[] };
+  | ProductDetails[]
+  | { category: string; products: ProductDetails[] };
 }
 
 export async function mainSearch(
@@ -304,7 +304,7 @@ export async function productsSellerSearch(
   prisma: PrismaClient,
   storeId: string,
   params: searchQueryPayload,
-): Promise<{ products: ProductsResponse[]; total: number }> {
+): Promise<{ products: ProductDetails[]; total: number }> {
   const { query = "", page = 1, limit = 10 } = params;
   const skip = (page - 1) * limit;
 
