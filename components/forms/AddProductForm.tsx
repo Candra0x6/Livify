@@ -22,7 +22,6 @@ import {
 } from "@/lib/validators/productSchema";
 import type { Category } from "@prisma/client";
 import { Box } from "lucide-react";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Select,

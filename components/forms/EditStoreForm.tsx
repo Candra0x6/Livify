@@ -1,4 +1,5 @@
 "use client";
+
 import { DeleteStoreDialog } from "@/app/(dashboard)/seller/dashboard/store/profile/component/DeleteButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,7 +121,7 @@ export const EditStoreForm: React.FC<{ store: Store }> = ({ store }) => {
                             className="hidden"
                             accept="image/*"
                             onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>,
+                              e: React.ChangeEvent<HTMLInputElement>
                             ) => {
                               const file = e.target.files;
                               if (file && file.length > 0) {

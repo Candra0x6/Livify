@@ -110,7 +110,7 @@ export const Navbar: FC<{ user: User | undefined }> = (user) => {
                         <ShoppingCartIcon className="p-[2px] flex" />
                       </Button>
                       <div className="">
-                        <AuthButton user={user.user} />
+                        <AuthButton />
                       </div>
                     </div>
                   </div>

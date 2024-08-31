@@ -1,11 +1,9 @@
 "use client";
 import slugify from "@/hooks/slugify";
 import { useProductActions } from "@/hooks/useProductAction";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { formatPrice } from "@/lib/utils";
-import {
-  type ProductsResponse,
-  fetchProducts,
-} from "@/services/api/productsApi";
+import { fetchProducts } from "@/services/api/productsApi";
 import type { Product } from "@prisma/client";
 import { Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
@@ -16,7 +14,7 @@ import { FaStar } from "react-icons/fa6";
 import { Button } from "../ui/button";
 
 export type ProductDetailsProps = {
-  data: ProductsResponse;
+  data: ProductDetails;
 };
 export const ProductCard: React.FC<ProductDetailsProps> = React.memo(
   ({ data }) => {

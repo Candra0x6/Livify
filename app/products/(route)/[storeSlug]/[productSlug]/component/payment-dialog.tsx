@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { ProductsResponse } from "@/services/api/productsApi";
+import type { ProductDetails } from "@/interfaces/models/Product";
 
 export const PaymentDialog = ({
   isOpen,
@@ -17,7 +17,7 @@ export const PaymentDialog = ({
 }: {
   isOpen: string;
   setIsOpen: React.Dispatch<React.SetStateAction<string>>;
-  data: ProductsResponse;
+  data: ProductDetails;
 }) => {
   return (
     <Dialog open={!!isOpen} onOpenChange={() => setIsOpen("")}>

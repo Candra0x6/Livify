@@ -1,5 +1,6 @@
 "use client";
 import { AddProductForm } from "@/components/forms/AddProductForm";
+import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkeletonCard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,14 +21,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useOrderAction } from "@/hooks/useOrderAction";
+import { formatPrice } from "@/lib/utils";
 import type { Category, Order, OrderItem, Product } from "@prisma/client";
 import { data } from "autoprefixer";
 import Image from "next/image";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { IoAdd } from "react-icons/io5";
 import tes from "../../../../../../public/images/sofa-chair.png";
-import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkeletonCard";
-import { formatPrice } from "@/lib/utils";
 
 interface productWCategory extends Product {
   Category: Category;
@@ -96,7 +96,7 @@ export const PopoverOrder = ({ data, children, isLoading }: props) => {
                     <div className="w-full flex justify-between ">
                       <span className="text-primary font-bold text-xl  items-end flex">
                         {/*@ts-ignore*/}
-                        {formatPrice(parseFloat(item.product.price))}
+                        {formatPrice(Number.parseFloat(item.product.price))}
                       </span>
                     </div>
                   </div>

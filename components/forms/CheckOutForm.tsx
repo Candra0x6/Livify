@@ -1,6 +1,6 @@
 import type { productBody } from "@/app/products/(route)/[storeSlug]/[productSlug]/page";
 import { useOrderAction } from "@/hooks/useOrderAction";
-import type { ProductsResponse } from "@/services/api/productsApi";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import type { Cart } from "@prisma/client";
 import {
   PaymentElement,
@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 export default function CheckoutForm({
   data,
 }: {
-  data: ProductsResponse | Cart;
+  data: ProductDetails | Cart;
 }) {
   const stripe = useStripe();
   const elements = useElements();

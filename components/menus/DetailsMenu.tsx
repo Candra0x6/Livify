@@ -1,10 +1,8 @@
-import { FC } from "react";
+import type { FC } from "react";
 import Flex from "../ui/flex";
 import { Heading } from "../ui/heading";
 
-type Props = {};
-
-const DetailsMenu: FC = (props) => {
+const DetailsMenu: FC = () => {
   return (
     <Flex direction="column">
       <Flex gap={70} className="py-1 border-b-2 border-gray-200">

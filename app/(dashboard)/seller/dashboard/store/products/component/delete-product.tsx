@@ -10,13 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { Product } from "@prisma/client";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { IoAdd } from "react-icons/io5";
-import { PiNotePencil } from "react-icons/pi";
 
 export const DeleteProductDialog: React.FC<{ Id: string }> = ({ Id }) => {
   const [isOpen, setIsOpen] = useState(false);

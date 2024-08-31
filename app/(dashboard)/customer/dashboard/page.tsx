@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { getSession } from "@/lib/auth/auth";
 import {
-  type UserOrderResponse,
   fetchCustomerOrdersSearch,
   fetchUserOrders,
 } from "@/services/api/orderApi";

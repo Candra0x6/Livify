@@ -20,19 +20,19 @@ import GridIcon from "../../public/icons/grid-view.svg";
 import ListIcon from "../../public/icons/list-view.svg";
 
 import { FilterElement, MobileFilter } from "@/components/Filter";
+import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { getSession } from "@/lib/auth/auth";
 import type { queryPayload } from "@/lib/validators/productSchema";
 import { fetchWishlistProduct } from "@/services/api/wishlistApi";
 import type { deleteWishlistBody } from "../api/v1/user/[userId]/wishlist/[wishlistId]/delete/route";
-import { ProductsResponse } from "@/services/api/productsApi";
-import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
 
 export interface WishlistProductType extends Wishlist {
-  product: ProductsResponse;
+  product: ProductDetails;
 }
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState<WishlistProductType[] | undefined>(
-    [],
+    []
   );
   const [selectValue, setSelectValue] = useState("grid-view");
   const [query, setQuery] = useState<queryPayload>({
@@ -78,7 +78,7 @@ export default function WishlistPage() {
       {
         method: "DELETE",
         body: JSON.stringify({ productId, wishlistId }),
-      },
+      }
     );
     const data = await res.json();
     console.log(data);

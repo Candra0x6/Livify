@@ -2,9 +2,9 @@ import {
   Success,
   statusBadge,
 } from "@/app/(dashboard)/seller/dashboard/store/orders/component/order-status-badge";
+import type { OrderItemWithProduct } from "@/interfaces/models/Order";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { formatDate, formatPrice } from "@/lib/utils";
-import type { OrderResponse } from "@/services/api/orderApi";
-import type { ProductCat } from "@/services/api/productsApi";
 import type { Order, OrderItem, Product } from "@prisma/client";
 import Image from "next/image";
 import React from "react";
@@ -13,10 +13,10 @@ import { FaStar } from "react-icons/fa6";
 import Flex from "../ui/flex";
 
 interface ProductOrder extends OrderItem {
-  product: ProductCat;
+  product: ProductDetails;
 }
 interface props extends Order {
-  orderItems: ProductOrder[];
+  orderItems: OrderItemWithProduct[];
 }
 
 function OrderCard({ data }: { data: props }) {
