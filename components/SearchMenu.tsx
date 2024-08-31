@@ -1,10 +1,8 @@
 "use client";
 
 import slugify from "@/hooks/slugify";
-import {
-  type ProductsResponse,
-  fetchProductsBySearch,
-} from "@/services/api/productsApi";
+import { fetchProductsBySearch } from "@/services/api/productsApi";
+import type { ProductSearch } from "@/types/api/response/ProductResponse";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
@@ -21,9 +19,7 @@ import { Button } from "./ui/button";
 
 export default function SearchModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [data, setData] = useState<{
-    data: [{ category: string; products: ProductsResponse[] }];
-  }>();
+  const [data, setData] = useState<ProductSearch>();
   const [keyword, setKeyword] = useState<string>("");
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -129,6 +125,7 @@ export default function SearchModal() {
                 {data?.data &&
                   data.data.length > 0 &&
                   data.data.map((item, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <div key={i}>
                       <div className="mb-2 px-2 text-xs font-semibold uppercase text-gray-400">
                         {item.products.length > 0 && item.category}

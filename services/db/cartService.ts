@@ -1,4 +1,5 @@
 import type { cartBody } from "@/app/api/v1/cart/new/route";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { AppError } from "@/utils/api/apiErrors";
 import type {
   Cart,
@@ -7,10 +8,9 @@ import type {
   PrismaClient,
   Product,
 } from "@prisma/client";
-import type { ProductCat } from "../api/productsApi";
 
 interface CartProduct extends CartItem {
-  product: ProductCat;
+  product: ProductDetails;
 }
 interface CartResponse extends Cart {
   items: CartProduct[];
