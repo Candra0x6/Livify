@@ -21,7 +21,6 @@ export default function CheckoutForm({
   const { createOrder } = useOrderAction();
   const [message, setMessage] = useState<null | string>(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!stripe) {
       return;
@@ -112,7 +111,6 @@ export default function CheckoutForm({
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={paymentElementOptions} />
-      {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
       <Button
         disabled={isLoading || !stripe || !elements}
         id="submit"

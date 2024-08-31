@@ -1,4 +1,6 @@
 import type { orderType } from "@/app/(dashboard)/seller/dashboard/store/orders/component/popover-details-order";
+import type { OrderItemWithProduct } from "@/interfaces/models/Order";
+import type { OrderDetails } from "@/types/api/response/OrderResponse";
 import type { StoreOrders } from "@/types/api/response/StoreResponse";
 import type { UserOrdersDetails } from "@/types/api/response/UserResponse";
 import type { ORDER_STATUS, Order, OrderItem } from "@prisma/client";
@@ -79,7 +81,7 @@ export const fetchUserOrders = async ({
 
 export const fetchOrderById = async (
   orderId: string,
-): Promise<{ order: orderType }> => {
+): Promise<OrderDetails> => {
 
   try {
     const response = await fetch(
