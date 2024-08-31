@@ -279,6 +279,7 @@ export const EditProductForm: React.FC<{ data: Product | undefined }> = ({
           <FormField
             control={form.control}
             name="categoryId"
+            disabled={true}
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium font-heading">

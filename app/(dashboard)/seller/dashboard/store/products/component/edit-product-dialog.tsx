@@ -8,12 +8,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { type ProductCat, fetchProductById } from "@/services/api/productsApi";
+import type { ProductDetails } from "@/interfaces/models/Product";
+import { fetchProductById } from "@/services/api/productsApi";
 import { useEffect, useState } from "react";
 import { PiNotePencil } from "react-icons/pi";
 
 export const EditProductDialog: React.FC<{ Id: string }> = ({ Id }) => {
-  const [product, setProduct] = useState<ProductCat>();
+  const [product, setProduct] = useState<ProductDetails>();
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     const getProductById = async (productId: string) => {

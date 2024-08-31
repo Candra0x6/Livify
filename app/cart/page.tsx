@@ -6,6 +6,7 @@ import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkele
 import { Button } from "@/components/ui/button";
 import { useCartAction } from "@/hooks/useCartAction";
 import usePayment from "@/hooks/usePayment";
+import { AllCartProducts, type CartProducts } from "@/interfaces/models/Cart";
 import { formatPrice } from "@/lib/utils";
 import { fetchCart } from "@/services/api/cartApi";
 import type { CartItem, Product } from "@prisma/client";
@@ -16,9 +17,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import EmptyCart from "../../public/svg/empty-cart.png";
 import { PaymentDialog } from "../products/(route)/[storeSlug]/[productSlug]/component/payment-dialog";
-export interface CartData extends CartItem {
-  product: Product;
-}
+
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
 );
@@ -28,7 +27,7 @@ function Cart() {
   const statusPayment = url.get("redirect_status");
 
   const [clientSecret, setClientSecret] = useState("");
-  const [cart, setCart] = useState<CartData[] | undefined>([]);
+  const [cart, setCart] = useState<CartProducts[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
   const { calculateTotal, onCheckOut, deleteCartItem } = useCartAction({
@@ -42,10 +41,8 @@ function Cart() {
       const paymentData = await handlePayment(calculateTotal() as number);
 
       setClientSecret(paymentData);
-      console.log(statusPayment);
       if (statusPayment) {
         const checkOutData = await onCheckOut();
-        console.log(checkOutData);
         if (checkOutData.data) {
           const response = await fetch(
             // @ts-ignore
@@ -72,7 +69,7 @@ function Cart() {
       try {
         setLoading(true);
         const data = await fetchCart();
-        setCart(data);
+        setCart(data.carts);
       } catch (err) {
         setLoading(true);
         console.error(err);

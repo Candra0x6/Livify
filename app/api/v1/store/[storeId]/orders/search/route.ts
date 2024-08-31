@@ -44,7 +44,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        data: orders,
+        store: orders,
       },
       200,
     );

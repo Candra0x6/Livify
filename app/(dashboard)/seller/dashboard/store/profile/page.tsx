@@ -13,16 +13,16 @@ export default async function Profile() {
   return (
     <div>
       <SectionHeader
-        title={checkStore?.store.quantity ? "Edit Store" : "Create Store"}
+        title={checkStore?.store.availability ? "Edit Store" : "Create Store"}
         description={
-          checkStore?.store.quantity
+          checkStore?.store.availability
             ? "Edit Yout store by fill fields"
             : "Create Store by fill fields"
         }
       />
       <div className="bg-white shadow-sh-card w-full rounded-xl mt-10">
         <div className="xl:px-40 xl:py-20 lg:px-30 lg:py-20 md:px-20 md:py-10 px-14 py-5">
-          {checkStore?.store.quantity ? (
+          {checkStore?.store.availability ? (
             <EditStoreForm store={store?.store as Store} />
           ) : (
             <CreateStoreForm />

@@ -7,6 +7,7 @@ export async function GET(
 ) {
 	try {
 		const userId = params.userId;
+		request.json
 		if (!userId) {
 			return NextResponse.json({
 				status: 400,
@@ -19,15 +20,10 @@ export async function GET(
 
 		return NextResponse.json(
 			{
-				user: {
-					id: user?.id,
-					name: user?.name,
-					email: user?.email,
-					image: user?.image,
-				},
+				data: user
 			},
 			{
-				status: 201,
+				status: 200,
 				statusText: "Successfully get user data",
 			},
 		);

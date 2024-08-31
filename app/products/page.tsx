@@ -14,11 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import type { queryPayload } from "@/lib/validators/productSchema";
-import {
-  type ProductsResponse,
-  fetchProducts,
-} from "@/services/api/productsApi";
+import { fetchProducts } from "@/services/api/productsApi";
 import type { Product } from "@prisma/client";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -36,7 +34,7 @@ export default function ProductsPage() {
   const sortBy = searchParam.get("sortBy");
   const sortOrder = searchParam.get("sortOrder");
 
-  const [products, setProducts] = useState<ProductsResponse[]>();
+  const [products, setProducts] = useState<ProductDetails[]>();
   const [query, setQuery] = useState<queryPayload>({
     limit: 10,
     page: 1,
@@ -50,14 +48,14 @@ export default function ProductsPage() {
     const getProducts = async () => {
       try {
         setLoading(true);
-        const data: ProductsResponse[] | undefined = await fetchProducts({
+        const data = await fetchProducts({
           limit: query.limit,
           page: query.page,
           sortBy: "createdAt",
           sortOrder: query.sortOrder,
           categoryId: query.categoryId,
         });
-        setProducts(data);
+        setProducts(data.products);
       } catch (err) {
         setLoading(true);
         console.error(err);

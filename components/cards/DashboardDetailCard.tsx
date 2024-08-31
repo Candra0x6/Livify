@@ -6,7 +6,6 @@ import { MdOutlineShowChart } from "react-icons/md";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -30,7 +29,7 @@ export const DashboardDetailCard: FC<MetricDataType> = ({
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="text-4xl font-bold">{value}</div>
+        <div className="text-4xl font-bold">{value || "0"}</div>
       </CardContent>
       <CardFooter className="text-green-500 space-x-2">
         <MdOutlineShowChart />

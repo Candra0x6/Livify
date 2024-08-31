@@ -23,8 +23,6 @@ export function AuthProvider({
 }) {
   const [session, setSession] = useState(initialSession);
   const [user, setUser] = useState(initialUser);
-  console.log(session);
-  console.log(user);
   const updateAuth = (newSession: Session | null, newUser: User | null) => {
     setSession(newSession);
     setUser(newUser);

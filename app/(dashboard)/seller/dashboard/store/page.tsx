@@ -4,6 +4,7 @@
 import { ChartSales } from "@/components/ChartSales";
 import SectionHeader from "@/components/SectionHeader";
 import { DashboardDetailCard } from "@/components/cards/DashboardDetailCard";
+import OrderDashboardSkeletonCard from "@/components/skeletons/OrderDashboardSkeletonCard";
 import {
   Card,
   CardContent,
@@ -20,7 +21,6 @@ import TOrderIcon from "../../../../../public/icons/TOrderIcon.svg";
 import TPendingIcon from "../../../../../public/icons/TPendingIcon.svg";
 import TSalesIcon from "../../../../../public/icons/TSalesIcon.svg";
 import TUSerIcon from "../../../../../public/icons/TUserIcon.svg";
-import OrderDashboardSkeletonCard from "@/components/skeletons/OrderDashboardSkeletonCard";
 
 export interface MetricDataType {
   id: number;
@@ -78,7 +78,7 @@ export default function Dashboard() {
             title: "Total Product",
             Icon: TUSerIcon,
             alt: "total-user-icon",
-            value: totalProducts?.pagination?.total,
+            value: totalProducts?.store.pagination?.total,
           },
           {
             id: 1,

@@ -20,14 +20,14 @@ export async function GET(
 		if (!response) {
 			return NextResponse.json({
 				store: {
-					quantity: false,
+					availability: false,
 					storeId: null,
 				},
 			});
 		}
 		return NextResponse.json({
 			store: {
-				quantity: true,
+				availability: true,
 				storeId: response.id,
 			},
 		});

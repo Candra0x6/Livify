@@ -69,11 +69,7 @@ export const AddProductForm: React.FC = () => {
   }, []);
   const onSubmit = async (values: productPayload) => {
     try {
-      const postProduct = await createProduct(values);
-      const data = await postProduct.json();
-      if (data) {
-        alert("Success Create Product");
-      }
+      await createProduct(values);
     } catch (err) {
       console.log(err);
     }
@@ -123,6 +119,7 @@ export const AddProductForm: React.FC = () => {
                 Description
               </FormLabel>
               <FormControl>
+                {/* @ts-ignore */}
                 <Textarea
                   id="desription"
                   className="text-sm border border-meta-foreground/20 bg-meta text-meta-foreground focus:ring-meta focus:ring-offset-1 block w-full"

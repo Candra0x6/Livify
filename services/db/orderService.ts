@@ -1,4 +1,5 @@
 import type { orderQueryPayload } from "@/lib/validators/orderSchema";
+import type { searchQueryPayload } from "@/lib/validators/searchParamsSchema";
 import { AppError } from "@/utils/api/apiErrors";
 import type {
   ORDER_STATUS,
@@ -8,7 +9,6 @@ import type {
   PrismaClient,
 } from "@prisma/client";
 import type { ProductsParams } from "./productService";
-import { searchQueryPayload } from "@/lib/validators/searchParamsSchema";
 
 interface OrdersParams extends ProductsParams {
   status: ORDER_STATUS;

@@ -1,13 +1,11 @@
-import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import Footer from "@/components/element/Footer";
 import { Navbar } from "@/components/element/Navbar";
 import { getUserDetail } from "@/hooks/auth/useUserDetail";
 import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
 import { getRefresh, getSession } from "@/lib/auth/auth";
-import { cn } from "@/lib/utils";
-import { getUserCredentials } from "@/utils/auth/auth";
-import type { RefreshSession, Session, User } from "@prisma/client";
+import type { UserDetails } from "@/types/api/response/UserResponse";
+import type { RefreshSession, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
 import { cookies } from "next/headers";
 import { Toaster } from "react-hot-toast";
@@ -46,25 +44,24 @@ export default async function RootLayout({
   const refreshCookies = cookies().get("refresh")?.value;
   const session = await getSession();
   const refresh = await getRefresh();
-  let user: { user: User } | null = null;
+  let user: UserDetails | undefined;
   if (session?.userId) {
     const res = await getUserDetail(session.userId);
     user = res;
   }
-
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
-        <AuthProvider session={session} user={user?.user}>
+        <AuthProvider session={session} user={user?.data as User | null}>
           {(sessionCookies || refreshCookies) && (
             <RefreshHandler
-              cookie={sessionCookies}
+              cookie={sessionCookies as string}
               initialSession={session as sessionEror}
               refreshToken={refresh as RefreshSession}
             />
           )}
           <header className="w-full bg-black">
-            <Navbar user={user?.user} />
+            <Navbar user={user?.data} />
           </header>
           <main>
             <Toaster />

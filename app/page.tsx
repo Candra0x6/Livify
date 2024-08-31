@@ -8,12 +8,9 @@ import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { CategorySkeletonCard } from "@/components/skeletons/CategorySkeletonCard";
 import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { cn } from "@/lib/utils";
-import {
-  type ProductsResponse,
-  fetchCategory,
-  fetchProducts,
-} from "@/services/api/productsApi";
+import { fetchCategory, fetchProducts } from "@/services/api/productsApi";
 import type { Category, Product } from "@prisma/client";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -22,7 +19,7 @@ import { FaArrowRightLong, FaGithub, FaStar } from "react-icons/fa6";
 
 export default function RootPage() {
   const [category, setcategory] = useState<{ categories: Category[] }>();
-  const [products, setProducts] = useState<ProductsResponse[] | undefined>();
+  const [products, setProducts] = useState<ProductDetails[]>();
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +35,7 @@ export default function RootPage() {
           productsPromise,
           categoryPromise,
         ]);
-        setProducts(productsData);
+        setProducts(productsData.products);
         setcategory(categoryData);
       } catch (err) {
         setLoading(true);
@@ -64,7 +61,7 @@ export default function RootPage() {
                   <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />
                   <span
                     className={cn(
-                      "inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
+                      "inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent"
                     )}
                   >
                     Github Repo

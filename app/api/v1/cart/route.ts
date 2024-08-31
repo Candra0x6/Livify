@@ -25,7 +25,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        carts: cart,
+        carts: cart.data,
       },
       200,
     );

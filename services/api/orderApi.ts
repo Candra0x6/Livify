@@ -1,7 +1,8 @@
 import type { orderType } from "@/app/(dashboard)/seller/dashboard/store/orders/component/popover-details-order";
+import type { StoreOrders } from "@/types/api/response/StoreResponse";
+import type { UserOrdersDetails } from "@/types/api/response/UserResponse";
 import type { ORDER_STATUS, Order, OrderItem } from "@prisma/client";
 import { useCallback } from "react";
-import type { ProductCat } from "./productsApi";
 
 export const fetchStoreOrders = async ({
   storeId,
@@ -9,15 +10,7 @@ export const fetchStoreOrders = async ({
 }: {
   storeId: string;
   status?: ORDER_STATUS | undefined;
-}): Promise<
-  | {
-    store: {
-      orders: OrderResponse[];
-      total: number;
-    };
-  }
-  | undefined
-> => {
+}): Promise<StoreOrders | undefined> => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}/orders${status ? `?status=${status}` : ""}`,
@@ -43,9 +36,7 @@ type searchQueryPayload = {
 export const fetchOrdersBySearch = async (
   storeId: string,
   query: searchQueryPayload,
-): Promise<
-  { data: { orders: OrderResponse[]; total: number } } | undefined
-> => {
+): Promise<StoreOrders> => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/store/${storeId}/orders/search?query=${query.query || ""}&limit=${query.limit || 10}&page=${query.page || 1}&sortOrder=${query.sortOrder || "desc"}`,
@@ -55,7 +46,7 @@ export const fetchOrdersBySearch = async (
         },
       },
     );
-    const data: { data: { orders: OrderResponse[]; total: number } } =
+    const data: StoreOrders =
       await response.json();
     return data;
   } catch (error) {
@@ -69,15 +60,7 @@ export const fetchUserOrders = async ({
 }: {
   userId: string;
   status?: ORDER_STATUS | undefined;
-}): Promise<
-  | {
-    data: {
-      orders: UserOrderResponse[];
-      total: number;
-    };
-  }
-  | undefined
-> => {
+}): Promise<UserOrdersDetails | undefined> => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/${userId}/order${status ? `?status=${status}` : ""}`,
@@ -93,18 +76,6 @@ export const fetchUserOrders = async ({
     console.error(`Failed to fetch products ${error}`);
   }
 };
-
-export interface OrderResponse extends OrderItem {
-  order: Order;
-  product: ProductCat;
-}
-
-interface ProductOrder extends OrderItem {
-  product: ProductCat;
-}
-export interface UserOrderResponse extends Order {
-  orderItems: ProductOrder[];
-}
 
 export const fetchOrderById = async (
   orderId: string,
@@ -135,12 +106,7 @@ export const fetchCustomerOrdersSearch = async ({
   query: string;
   status?: ORDER_STATUS | undefined;
 }): Promise<
-  | {
-    data: {
-      orders: UserOrderResponse[];
-      total: number;
-    };
-  }
+  UserOrdersDetails
   | undefined
 > => {
   try {

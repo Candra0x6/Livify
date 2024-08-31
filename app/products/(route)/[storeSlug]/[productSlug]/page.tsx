@@ -12,9 +12,9 @@ import { Text } from "@/components/ui/text";
 import { useOrderAction } from "@/hooks/useOrderAction";
 import usePayment from "@/hooks/usePayment";
 import { useProductActions } from "@/hooks/useProductAction";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { formatPrice } from "@/lib/utils";
 import {
-  type ProductsResponse,
   fetchProductById,
   fetchRecommendationProducts,
 } from "@/services/api/productsApi";
@@ -38,7 +38,7 @@ export interface productBody {
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
 );
-export default function ProductDetails() {
+export default function ProductDetailsPage() {
   const url = useSearchParams();
   const statusPayment = url.get("redirect_status");
   const { createOrder } = useOrderAction();
@@ -46,8 +46,8 @@ export default function ProductDetails() {
   const { handlePayment } = usePayment();
   const params = useSearchParams();
   const productId = params.get("productId");
-  const [data, setData] = useState<ProductsResponse | undefined>();
-  const [products, setProducts] = useState<ProductsResponse[] | undefined>([]);
+  const [data, setData] = useState<ProductDetails | undefined>();
+  const [products, setProducts] = useState<ProductDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [clientSecret, setClientSecret] = useState("");
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ProductDetails() {
         ]);
 
         setData(productsData?.product);
-        setProducts(recommendationData);
+        setProducts(recommendationData?.products);
       } catch (err) {
         setLoading(true);
         console.error(err);
@@ -81,15 +81,15 @@ export default function ProductDetails() {
 
   const handleOrder = async () => {
     try {
-      const prodcut = [data];
-      const productBodies: productBody[] = prodcut?.map((item) => ({
+      const product = [data];
+      const productBodies = product?.map((item) => ({
         productId: item?.id,
         price: item?.price as unknown as number,
         quantity: 1,
         storeId: item?.storeId,
       }));
 
-      await createOrder(productBodies, "SOLO");
+      await createOrder(productBodies as productBody[], "SOLO");
     } catch (error) {
       console.error("Checkout failed:", error);
       alert("Failed to place order. Please try again.");

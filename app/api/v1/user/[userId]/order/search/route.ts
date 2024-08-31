@@ -1,16 +1,12 @@
 import prisma from "@/lib/db";
 import { ordersQuerySchema } from "@/lib/validators/orderSchema";
-import { productQuerySchema } from "@/lib/validators/productSchema";
-import {
-  orderQuerySchema,
-  searchQuerySchema,
-} from "@/lib/validators/searchParamsSchema";
 import { errorHandler } from "@/middleware";
 import { ordersCustomerSearch } from "@/services/db/orderService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
+
 
 export async function GET(
   request: NextRequest,
@@ -50,7 +46,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        data: orders,
+        orders: orders.orders,
       },
       200,
     );

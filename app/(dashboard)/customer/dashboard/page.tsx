@@ -16,17 +16,13 @@ import {
   fetchCustomerOrdersSearch,
   fetchUserOrders,
 } from "@/services/api/orderApi";
+import type { UserOrdersDetails } from "@/types/api/response/UserResponse";
 import type { ORDER_STATUS } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 export default function CustomerOrderPage() {
   const [status, setStatus] = useState<ORDER_STATUS | undefined>();
-  const [order, setOrder] = useState<{
-    data: {
-      orders: UserOrderResponse[];
-      total: number;
-    };
-  }>();
+  const [order, setOrder] = useState<UserOrdersDetails>();
   const [keyword, setKeyword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -37,6 +33,7 @@ export default function CustomerOrderPage() {
       setKeyword(searchRef.current.value);
     }
   };
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleKeyDown = (event: any) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -106,11 +103,9 @@ export default function CustomerOrderPage() {
         {loading ? (
           <OrderHistorySkeletonCard />
         ) : (
-          order?.data &&
-          order.data.orders.length > 0 &&
-          order?.data.orders.map((item) => (
-            <OrderCard key={item.id} data={item} />
-          ))
+          order?.orders &&
+          order.orders.length > 0 &&
+          order?.orders.map((item) => <OrderCard key={item.id} data={item} />)
         )}
       </div>
     </>

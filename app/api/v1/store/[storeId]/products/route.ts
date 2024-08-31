@@ -1,8 +1,7 @@
-import { getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { productQuerySchema } from "@/lib/validators/productSchema";
 import { errorHandler } from "@/middleware";
-import { getAllProducts, getStoreProducts } from "@/services/db/productService";
+import { getStoreProducts } from "@/services/db/productService";
 import { AppError } from "@/utils/api/apiErrors";
 import { ApiResponse } from "@/utils/api/apiResponse";
 import type { NextRequest } from "next/server";
@@ -42,13 +41,15 @@ export async function GET(
 
 		return ApiResponse.success(
 			{
-				products,
-				pagination: {
-					page,
-					limit,
-					total,
-					totalPages: Math.ceil(total / limit),
-				},
+				store: {
+					products,
+					pagination: {
+						page,
+						limit,
+						total,
+						totalPages: Math.ceil(total / limit),
+					}
+				}
 			},
 			200,
 		);

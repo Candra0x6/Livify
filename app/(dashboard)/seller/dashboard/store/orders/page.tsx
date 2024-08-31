@@ -24,14 +24,14 @@ import {
 import { Text } from "@/components/ui/text";
 import { getSession } from "@/lib/auth/auth";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
-import type { ORDER_STATUS, Order } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, FilterIcon, MinusCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 
+import TableOrderSkeleton from "@/components/skeletons/TableOrderSkeleton";
+import type { OrderItemWithOrder } from "@/interfaces/models/Order";
 import {
-  type OrderResponse,
   fetchOrderById,
   fetchOrdersBySearch,
   fetchStoreOrders,
@@ -47,9 +47,8 @@ import {
   PopoverOrder,
   type orderType,
 } from "./component/popover-details-order";
-import TableOrderSkeleton from "@/components/skeletons/TableOrderSkeleton";
 function Orders() {
-  const [orders, setOrders] = useState<OrderResponse[] | undefined>([]);
+  const [orders, setOrders] = useState<OrderItemWithOrder[] | undefined>([]);
   const [date, setDate] = useState<Date>();
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [orderItem, setOrderItem] = useState<
@@ -66,7 +65,8 @@ function Orders() {
       setKeyword(searchRef.current.value);
     }
   };
-  const handleKeyDown = (event: any) => {
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       if (searchRef.current) {
@@ -84,7 +84,7 @@ function Orders() {
         const data = await fetchOrdersBySearch(storeId, {
           query: keyword as string,
         });
-        setOrders(data?.data.orders);
+        setOrders(data?.store?.orders);
       } catch {
         setTableLoading(true);
         throw new Error("Something went wrong");
@@ -110,7 +110,6 @@ function Orders() {
 
     getOrderById();
   }, [selectedItemId]);
-  console.log(orders);
 
   return (
     <div className=" relative">
@@ -122,7 +121,7 @@ function Orders() {
                 variant={"outline"}
                 className={cn(
                   "w-[200px] justify-start text-left font-normal bg-white border-0 shadow-sh-card rounded-md",
-                  !date && "text-muted-foreground",
+                  !date && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />

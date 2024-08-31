@@ -1,4 +1,5 @@
 import { useCartAction } from "@/hooks/useCartAction";
+import type { CartProducts } from "@/interfaces/models/Cart";
 import { formatPrice } from "@/lib/utils";
 import type { CartItem, Product } from "@prisma/client";
 import { MinusIcon, PlusIcon } from "lucide-react";
@@ -14,8 +15,8 @@ export interface CartData extends CartItem {
 }
 export type CartDetailsProps = {
   data?: CartData;
-  cart: CartData[] | undefined;
-  setCart: React.Dispatch<React.SetStateAction<CartData[] | undefined>>;
+  cart: CartProducts[] | undefined;
+  setCart: React.Dispatch<React.SetStateAction<CartProducts[] | undefined>>;
 };
 export const CartDetailsCard: FC<CartDetailsProps> = ({
   cart,

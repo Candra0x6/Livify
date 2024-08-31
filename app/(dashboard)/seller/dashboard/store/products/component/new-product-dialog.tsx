@@ -8,8 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { IoAdd } from "react-icons/io5";
 
 export const NewProductDialog: React.FC = () => {

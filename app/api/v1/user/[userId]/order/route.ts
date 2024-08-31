@@ -43,7 +43,7 @@ export async function GET(
 
     return ApiResponse.success(
       {
-        data: order,
+        data: order.orders,
       },
       200,
     );

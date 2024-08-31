@@ -1,4 +1,5 @@
 "use client";
+import TableProductSkeleton from "@/components/skeletons/TableProductSkeleton";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -22,25 +23,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Text } from "@/components/ui/text";
+import type { ProductDetails } from "@/interfaces/models/Product";
 import { getSession } from "@/lib/auth/auth";
 import { cn, formatPrice } from "@/lib/utils";
-import {
-  type ProductResponse,
-  ProductsResponse,
-  fetchProductsBySearch,
-  fetchStoreProducts,
-  fetchStoreProductsBySearch,
-} from "@/services/api/productsApi";
+import { fetchStoreProductsBySearch } from "@/services/api/productsApi";
 import { format } from "date-fns";
 import { CalendarIcon, FilterIcon } from "lucide-react";
-import { Key, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { DeleteProductDialog } from "./component/delete-product";
 import { EditProductDialog } from "./component/edit-product-dialog";
 import { NewProductDialog } from "./component/new-product-dialog";
-import TableProductSkeleton from "@/components/skeletons/TableProductSkeleton";
 export default function Products() {
-  const [products, setProducts] = useState<ProductsResponse[] | undefined>();
+  const [products, setProducts] = useState<ProductDetails[] | undefined>();
   const [date, setDate] = useState<Date>();
   const [keyword, setKeyword] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,7 +46,7 @@ export default function Products() {
       setKeyword(searchRef.current.value);
     }
   };
-  const handleKeyDown = (event: any) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       if (searchRef.current) {
@@ -68,7 +63,7 @@ export default function Products() {
         const data = await fetchStoreProductsBySearch(storeId, {
           query: keyword as string,
         });
-        setProducts(data?.products);
+        setProducts(data?.store.products);
       } catch (err) {
         setLoading(true);
         console.error(err);
@@ -107,7 +102,7 @@ export default function Products() {
                 variant={"outline"}
                 className={cn(
                   "w-[200px] justify-start text-left font-normal bg-white border-0 shadow-sh-card rounded-md",
-                  !date && "text-muted-foreground",
+                  !date && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -184,7 +179,6 @@ export default function Products() {
             <TableHead>Category</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Stock</TableHead>
-            <TableHead>Avialable Color</TableHead>
             <TableHead className="w-24">Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -207,16 +201,13 @@ export default function Products() {
                 </TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>{item.Category.name}</TableCell>
-                {/* @ts-ignore */}
-                <TableCell>{formatPrice(parseFloat(item.price))}</TableCell>
-                <TableCell>{item.stock}</TableCell>
                 <TableCell>
-                  <div className="flex gap-x-2">
-                    <div className="aspect-square w-5 bg-red rounded-full" />
-                    <div className="aspect-square w-5 bg-red rounded-full" />
-                    <div className="aspect-square w-5 bg-red rounded-full" />
-                  </div>
+                  {/* @ts-ignore */}
+
+                  {formatPrice(Number.parseFloat(item.price))}
                 </TableCell>
+                <TableCell>{item.stock}</TableCell>
+
                 <TableCell>
                   <div className="flex gap-x-2">
                     <EditProductDialog Id={item.id} />
