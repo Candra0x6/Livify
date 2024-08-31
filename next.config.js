@@ -14,6 +14,28 @@ const nextConfig = {
 			? `https://${process.env.VERCEL_URL}`
 			: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
 	},
+	async headers() {
+		return [
+			{
+				// Menerapkan header ini ke semua routes di aplikasi Anda
+				source: "/:path*",
+				headers: [
+					{
+						key: "Access-Control-Allow-Origin",
+						value: "*", // Ganti dengan domain spesifik jika diperlukan
+					},
+					{
+						key: "Access-Control-Allow-Methods",
+						value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+					},
+					{
+						key: "Access-Control-Allow-Headers",
+						value: "X-Requested-With, Content-Type, Authorization",
+					},
+				],
+			},
+		];
+	},
 };
 
 module.exports = nextConfig;
