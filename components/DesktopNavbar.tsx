@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type { Category } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 import {
@@ -10,7 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 
-const DesktopNav = () => {
+const DesktopNav = ({ category }: { category: Category[] }) => {
   return (
     <div className="hidden lg:flex gap-x-8 items-center font-semibold ">
       <NavigationMenu>
@@ -36,12 +37,16 @@ const DesktopNav = () => {
                   </NavigationMenuLink>
                 </li>
                 <ListItem href="/products" title="Products">
-                  All the products we have to offer
+                  All the furniture products
                 </ListItem>
                 <ListItem href="/#categories" title="Categories">
-                  See all categories we have
+                  See all furniture categories
                 </ListItem>
-                <ListItem href="/dashboard/blogs" title="Blogs">
+                <ListItem
+                  className="opacity-50"
+                  href="#soon"
+                  title="Blogs - Soon"
+                >
                   Check blog about furniture
                 </ListItem>
               </ul>
@@ -53,24 +58,16 @@ const DesktopNav = () => {
             </NavigationMenuTrigger>
             <NavigationMenuContent className="bg-white">
               <ul className="grid w-[400px] gap-3 p-6 md:w-[500px] md:grid-cols-2">
-                <ListItem
-                  href="/products?category=skateboards"
-                  title="Skateboards"
-                >
-                  Explore the skateboards category
-                </ListItem>
-                <ListItem href="/products?category=clothing" title="Clothing">
-                  Explore the clothing category
-                </ListItem>
-                <ListItem href="/products?category=shoes" title="Shoes">
-                  Explore the shoes category
-                </ListItem>
-                <ListItem
-                  href="/products?category=accessories"
-                  title="Accessories"
-                >
-                  Explore the accessories category
-                </ListItem>
+                {category?.map((item, i) => (
+                  <ListItem
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                    key={i}
+                    href={`/products?categoryId=${item.id}`}
+                    title={item.name}
+                  >
+                    Explore the {item.name} category
+                  </ListItem>
+                ))}
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>

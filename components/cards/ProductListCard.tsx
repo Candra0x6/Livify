@@ -50,7 +50,9 @@ const ProductListCard: FC<ProductDetailsProps> = memo(({ data }): ReactNode => {
                   </h1>
                 </div>
                 {/* category */}
-                <span className="sm:text-base text-sm">Chair</span>
+                <span className="sm:text-base text-sm">
+                  {data.Category.name}
+                </span>
               </div>
             </Flex>
             <Flex className="gap-x-2">

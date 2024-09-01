@@ -28,7 +28,6 @@ export async function getAllProducts(
   } = params;
 
   const skip = (page - 1) * limit;
-
   const where: Prisma.ProductWhereInput = categoryId ? { categoryId } : {};
 
   const [products, total] = await Promise.all([

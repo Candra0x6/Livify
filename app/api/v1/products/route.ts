@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         limit: url.searchParams.get("limit") || "10",
         page: url.searchParams.get("page") || "1",
         categoryId: url.searchParams.get("categoryId") || undefined,
-        sortBy: url.searchParams.get("sortBy") || "createdAt",
+        sortBy: url.searchParams.get("sortBy"),
         sortOrder: url.searchParams.get("sortOrder") || "desc",
       });
     const { products, total } = await getAllProducts(prisma, {

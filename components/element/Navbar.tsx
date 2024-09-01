@@ -1,10 +1,11 @@
 "use client";
-import type { User } from "@prisma/client";
+import type { Category, User } from "@prisma/client";
 import { HeartIcon, ShoppingCartIcon } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState, type FC } from "react";
 
+import { fetchCategory } from "@/services/api/productsApi";
 import logo from "../../public/svg/logo.svg";
 import AuthButton from "../AuthButton";
 import DesktopNav from "../DesktopNavbar";
@@ -46,10 +47,18 @@ const navList: navbarList[] = [
   },
 ];
 
-export const Navbar: FC<{ user: User | undefined }> = (user) => {
+export const Navbar: FC<{ user: User | undefined }> = () => {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
+  const [category, setcategory] = useState<Category[]>([]);
   const path = usePathname();
+  useEffect(() => {
+    const getCategory = async () => {
+      const categoryData = await fetchCategory();
+      setcategory(categoryData.categories);
+    };
+    getCategory();
+  }, []);
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
@@ -84,7 +93,7 @@ export const Navbar: FC<{ user: User | undefined }> = (user) => {
                   }
                 >
                   <div className="w-full lg:flex hidden">
-                    <DesktopNav />
+                    <DesktopNav category={category} />
                   </div>
                   <div className="flex lg:hidden">
                     <MobileNav />

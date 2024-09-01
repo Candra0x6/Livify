@@ -4,6 +4,7 @@ import SectionHeader from "@/components/SectionHeader";
 import { ProductCard } from "@/components/cards/ProductCard";
 import ProductListCard from "@/components/cards/ProductListCard";
 import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
+import { ProductListSkeletonCard } from "@/components/skeletons/ProductListSkeletonCard";
 import Flex from "@/components/ui/flex";
 import Grid from "@/components/ui/grid";
 import {
@@ -17,7 +18,6 @@ import { Text } from "@/components/ui/text";
 import type { ProductDetails } from "@/interfaces/models/Product";
 import type { queryPayload } from "@/lib/validators/productSchema";
 import { fetchProducts } from "@/services/api/productsApi";
-import type { Product } from "@prisma/client";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -43,7 +43,6 @@ export default function ProductsPage() {
     sortOrder: (sortOrder as "desc" | "asc") || "desc",
   });
   const [loading, setLoading] = useState<boolean>(true);
-
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -51,7 +50,7 @@ export default function ProductsPage() {
         const data = await fetchProducts({
           limit: query.limit,
           page: query.page,
-          sortBy: "createdAt",
+          sortBy: query.sortBy,
           sortOrder: query.sortOrder,
           categoryId: query.categoryId,
         });
@@ -67,12 +66,14 @@ export default function ProductsPage() {
   }, [query]);
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mb-40">
       <Grid className="w-full  place-content-start sm:my-10 sm:mt-32 mt-36 md:grid-cols-2 md:grid-rows-1 grid-rows-2 grid-cols-1">
         <Flex direction="column">
           <SectionHeader
             title="Explore All Products"
-            description="About 201 Product"
+            description={`About ${products?.length || "0"} Product${
+              products && products?.length > 1 ? "s" : ""
+            }`}
           />
         </Flex>
         <div className="w-full md:gap-10 flex gap-x-2">
@@ -138,21 +139,29 @@ export default function ProductsPage() {
           <FilterElement query={query} setQuery={setQuery} />
         </Flex>
         <Grid
-          className={`grid-flow-row md:w-[80%] w-full h-fit ${
-            view === "grid-view"
-              ? "xl:grid-cols-4 xl:gap-15 sm:grid-cols-3 md:gap-3 grid-cols-2 md:mt-0 xl:gap-6 gap-2"
-              : "grid-cols-1 lg:gap-y-5 gap-y-2"
+          className={`grid-flow-row md:w-[80%] w-full h-fit relative ${
+            view === "list-view"
+              ? "grid-cols-1 lg:gap-y-5 gap-y-2"
+              : "xl:grid-cols-4 xl:gap-15 sm:grid-cols-3 md:gap-3 grid-cols-2 md:mt-0 xl:gap-6 gap-2"
           }`}
         >
           {loading ? (
-            <ProductGridSkeletonCard />
-          ) : (
+            view === "list-view" ? (
+              <ProductListSkeletonCard />
+            ) : (
+              <ProductGridSkeletonCard />
+            )
+          ) : products ? (
             products &&
             products.length > 0 &&
             products.map((item) => {
-              const Comp = view === "grid-view" ? ProductCard : ProductListCard;
+              const Comp = view === "list-view" ? ProductListCard : ProductCard;
               return <Comp key={item.id} data={item} />;
             })
+          ) : (
+            <div className="flex absolute w-full mx-auto justify-center">
+              <h1 className="font-semibold text-4xl">Product Not Found</h1>
+            </div>
           )}
         </Grid>
       </Flex>

@@ -63,7 +63,7 @@ export default async function RootLayout({
           <header className="w-full bg-black">
             <Navbar user={user?.data} />
           </header>
-          <main>
+          <main className="">
             <Toaster />
             {children}
           </main>

@@ -17,12 +17,11 @@ const nextConfig = {
 	async headers() {
 		return [
 			{
-				// Menerapkan header ini ke semua routes di aplikasi Anda
 				source: "/:path*",
 				headers: [
 					{
 						key: "Access-Control-Allow-Origin",
-						value: "*", // Ganti dengan domain spesifik jika diperlukan
+						value: "*",
 					},
 					{
 						key: "Access-Control-Allow-Methods",
