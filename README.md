@@ -68,7 +68,7 @@ Livify is an open-source e-commerce platform specifically designed for furniture
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please check out our [Contributing Guide](CONTRIBUTING.md) for guidelines on how to proceed.
+We welcome contributions from the community!
 
 ## 📜 License
 
