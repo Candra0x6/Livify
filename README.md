@@ -11,7 +11,6 @@ Livify is an open-source e-commerce platform specifically designed for furniture
 - Shopping cart and wishlist functionality
 - Secure checkout process with Stripe integration
 - Admin dashboard for inventory and order management
-- SEO-friendly product pages
 - Integration with Supabase for robust and scalable data management
 
 ## 🛠 Tech Stack
@@ -86,7 +85,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-For any queries or support, please open an issue in this repository or contact us at support@furnitech.com.
+For any queries or support, please open an issue in this repository or contact me kurniawancandram@gmail.com.
 
 ---
 
