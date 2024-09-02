@@ -71,6 +71,7 @@ export async function POST(request: Request) {
 
 		response.cookies.set("session", encryptedSession, {
 			httpOnly: false,
+			domain: process.env.NEXT_PUBLIC_BASE_URL ? new URL(process.env.NEXT_PUBLIC_BASE_URL).hostname : undefined,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "strict",
 			maxAge: 24 * 60 * 60,
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
 		});
 
 		response.cookies.set("refresh", encryptedRefresh, {
+			domain: `${process.env.VERCEL_URL}`,
 			httpOnly: false,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "strict",
