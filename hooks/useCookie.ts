@@ -26,7 +26,7 @@ export function useCookie() {
   ): void => {
     const isProduction = process.env.NODE_ENV === 'production';
     const domain = getMainDomain(url as string);
-
+    console.log(domain)
     const cookieOptions: CookieOptions = {
       httpOnly: true,
       secure: isProduction,
