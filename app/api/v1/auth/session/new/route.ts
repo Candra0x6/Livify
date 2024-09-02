@@ -71,8 +71,8 @@ export async function POST(request: Request) {
 			{ status: 200, statusText: "Success Create Session and Refresh Token" },
 		);
 
-		setCookie(response, "session", encryptedSession, { maxAge: 24 * 60 * 60 }, request.url);
-		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 }, request.url);
+		setCookie(response, "session", encryptedSession, { maxAge: 24 * 60 * 60 });
+		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
 
 		return response;
 	} catch (error) {
