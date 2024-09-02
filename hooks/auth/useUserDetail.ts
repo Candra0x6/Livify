@@ -4,7 +4,7 @@ import type { User } from "@prisma/client";
 export async function getUserDetail(userId: string): Promise<UserDetails | undefined> {
 	try {
 		const response = await fetch(
-			`http://localhost:3000/api/v1/user/${userId}`,
+			`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/${userId}`,
 			{
 				method: "GET",
 			},
