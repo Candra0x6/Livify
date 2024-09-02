@@ -1,55 +1,49 @@
-import type { NextResponse } from "next/server";
-
-interface SessionCookies {
-  sessionToken: string;
-  expires: Date;
-}
-
-interface RefreshCookie {
-  refreshToken: string;
-  expires: Date;
-  sessionToken: string;
-}
+import { parse, serialize } from 'cookie';
+import type { NextResponse } from 'next/server';
 
 interface CookieOptions {
   httpOnly?: boolean;
   secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
+  sameSite?: 'strict' | 'lax' | 'none';
   maxAge?: number;
   path?: string;
   domain?: string;
 }
-
 
 export function useCookie() {
   const setCookie = (
     response: NextResponse,
     name: string,
     value: string,
-    additionalOptions: Partial<CookieOptions> = {}
+    options: Partial<CookieOptions> = {}
   ): void => {
-    const isProduction = process.env.NODE_ENV === "production";
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions: CookieOptions = {
-      httpOnly: false,
+      httpOnly: true, // Changed to true for better security
       secure: isProduction,
-      sameSite: isProduction ? "strict" : "lax",
+      sameSite: isProduction ? 'none' : 'lax', // Changed to 'none' for cross-origin in production
       maxAge: 24 * 60 * 60,
-      path: "/",
-      ...additionalOptions,
+      path: '/',
+      ...options,
     };
 
-    if (isProduction && process.env.COOKIE_DOMAIN) {
-      let domain = process.env.COOKIE_DOMAIN;
-      if (!domain.startsWith('.') && domain !== 'localhost') {
-        domain = `.${domain}`;
-      }
-      cookieOptions.domain = domain;
+    if (isProduction && process.env.NEXT_PUBLIC_COOKIE_DOMAIN) {
+      cookieOptions.domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
     }
 
-    response.cookies.set(name, value, cookieOptions);
-  };
-  return {
-    setCookie
-  }
-}
+    const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+    const cookieString = serialize(name, stringValue, cookieOptions);
 
+    response.headers.append('Set-Cookie', cookieString);
+  };
+
+  const getCookie = (request: Request, name: string): string | undefined => {
+    const cookies = parse(request.headers.get('Cookie') || '');
+    return cookies[name];
+  };
+
+  return {
+    setCookie,
+    getCookie,
+  };
+}

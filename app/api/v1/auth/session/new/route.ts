@@ -10,7 +10,6 @@ export async function POST(request: Request) {
 	try {
 		const { setCookie } = useCookie()
 		const { userId } = await request.json();
-		console.log(userId)
 		if (!userId || typeof userId !== "string") {
 			return NextResponse.json(
 				{ message: "Valid User ID is required" },
