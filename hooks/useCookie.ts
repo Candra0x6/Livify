@@ -9,22 +9,31 @@ interface CookieOptions {
   path?: string;
   domain?: string;
 }
+function getMainDomain(url: any) {
+  const hostname = new URL(url).hostname;
+  const parts = hostname.split('.');
+  return parts.length > 2 ? `.${parts.slice(-2).join('.')}` : `.${hostname}`;
+}
+
 
 export function useCookie() {
   const setCookie = (
     response: NextResponse,
     name: string,
     value: string,
-    options: Partial<CookieOptions> = {}
+    options: Partial<CookieOptions> = {},
+    url?: any
   ): void => {
     const isProduction = process.env.NODE_ENV === 'production';
+    const domain = getMainDomain(url as string);
+
     const cookieOptions: CookieOptions = {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60,
       path: '/',
-      domain: process.env.COOKIE_DOMAIN, // Tambahkan ini
+      domain: domain,
       ...options,
     };
 

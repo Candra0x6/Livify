@@ -3,6 +3,7 @@ import { useCookie } from "@/hooks/useCookie";
 import { encrypt } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import type { CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -70,8 +71,8 @@ export async function POST(request: Request) {
 			{ status: 200, statusText: "Success Create Session and Refresh Token" },
 		);
 
-		setCookie(response, "session", encryptedSession);
-		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
+		setCookie(response, "session", encryptedSession, { maxAge: 24 * 60 * 60 }, request.url);
+		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 }, request.url);
 
 		return response;
 	} catch (error) {
