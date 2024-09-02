@@ -68,24 +68,34 @@ export async function POST(request: Request) {
 			},
 			{ status: 200, statusText: "Success Create Session and Refresh Token" },
 		);
+		const setCookie = (response: any, name: any, value: any, additionalOptions = {}) => {
+			const isProduction = process.env.NODE_ENV === "production";
+			const cookieOptions: {
+				httpOnly: boolean;
+				secure: boolean;
+				sameSite: string;
+				maxAge: number;
+				path: string;
+				domain?: string
+			} = {
+				httpOnly: false,
+				secure: isProduction,
+				sameSite: isProduction ? "strict" : "lax",
+				maxAge: 24 * 60 * 60, // 24 jam dalam detik
+				path: "/",
+				...additionalOptions, // Memungkinkan override opsi default
+			};
 
-		response.cookies.set("session", encryptedSession, {
-			httpOnly: false,
-			domain: process.env.NEXT_PUBLIC_BASE_URL ? new URL(process.env.NEXT_PUBLIC_BASE_URL).hostname : undefined,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			maxAge: 24 * 60 * 60,
-			path: "/",
-		});
+			if (isProduction && process.env.COOKIE_DOMAIN) {
+				cookieOptions.domain = process.env.COOKIE_DOMAIN;
+			}
 
-		response.cookies.set("refresh", encryptedRefresh, {
-			domain: `${process.env.VERCEL_URL}`,
-			httpOnly: false,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			maxAge: 24 * 60 * 60 * 7,
-			path: "/",
-		});
+			response.cookies.set(name, value, cookieOptions);
+		};
+
+		// Penggunaan
+		setCookie(response, "session", encryptedSession);
+		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
 
 		return response;
 	} catch (error) {
