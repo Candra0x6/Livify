@@ -24,13 +24,14 @@ export function useCookie() {
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60,
       path: '/',
+      domain: process.env.COOKIE_DOMAIN, // Tambahkan ini
       ...options,
     };
 
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
     const cookieString = serialize(name, stringValue, cookieOptions);
 
-    response.headers.append('Set-Cookie', cookieString);
+    response.headers.set('Set-Cookie', cookieString);
   };
 
   const getCookie = (request: Request, name: string): string | undefined => {
