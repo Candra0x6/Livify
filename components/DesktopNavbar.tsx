@@ -28,10 +28,10 @@ const DesktopNav = ({ category }: { category: Category[] }) => {
                       className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary text-accent p-6 no-underline outline-none focus:shadow-md"
                       href="/"
                     >
-                      <div className="mb-2 mt-4 text-lg font-bold">Livify</div>
+                      <div className="mb-2 mt-4 text-2xl font-bold">Livify</div>
                       <p className="text-sm leading-tight text-white ">
-                        An open source ecommerce skateshop built with everything
-                        new in Next.js
+                        Livify connects fast, free, customizable Next.js
+                        furniture e-commerce. Empower your online business.
                       </p>
                     </Link>
                   </NavigationMenuLink>

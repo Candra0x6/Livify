@@ -41,8 +41,8 @@ export const MobileNav: FC<{
         <nav className="flex flex-col gap-4">
           <SheetHeader>
             <SheetTitle>
-              <div className="">
-                <Image src={logo} alt="Livify." className="w-40" />
+              <div className="w-full">
+                <Image src={logo} alt="Livify." className="w-60" />
               </div>
             </SheetTitle>
             <SheetDescription />
