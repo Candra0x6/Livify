@@ -45,12 +45,8 @@ export default async function RootLayout({
   const refreshCookies = cookies().get("refresh")?.value;
   const session = await getSession();
   const refresh = await getRefresh();
-  let user: UserDetails | undefined;
-  if (session?.userId) {
-    const res = await getUserDetail(session.userId);
-    user = res;
-    console.log(res);
-  }
+  const user = await getUserDetail(session?.userId as string);
+
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
