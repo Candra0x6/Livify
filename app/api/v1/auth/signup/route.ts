@@ -7,19 +7,13 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
 	try {
 		const { name, email, password, role } = await request.json();
-
-		console.log(email);
-		// Validasi input
 		if (!name || !email || !password || !role) {
 			return NextResponse.json(
 				{ message: "All fields are required" },
 				{ status: 400 },
 			);
 		}
-
-		// Hash password
 		const hashedPassword = Base64.encode(password);
-
 		const user = await prisma.user.create({
 			data: {
 				name,
@@ -28,8 +22,6 @@ export async function POST(request: Request) {
 				role,
 			},
 		});
-
-		// Hanya mengembalikan data yang diperlukan
 		return NextResponse.json(
 			{
 				user: {
@@ -45,7 +37,6 @@ export async function POST(request: Request) {
 		console.error("Error creating user:", error);
 
 		if (error instanceof Error) {
-			// Tangani error spesifik, misalnya untuk email yang sudah ada
 			if (
 				error.message.includes(
 					"Unique constraint failed on the fields: (`email`)",
@@ -62,7 +53,5 @@ export async function POST(request: Request) {
 			{ message: "Unable to create new user" },
 			{ status: 500, statusText: "Internal Server Error" },
 		);
-	} finally {
-		await prisma.$disconnect();
 	}
 }

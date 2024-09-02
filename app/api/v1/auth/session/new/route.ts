@@ -2,12 +2,13 @@ import generateToken from "@/hooks/generateToken";
 import { encrypt } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
 	try {
 		const { userId } = await request.json();
-
+		console.log(userId)
 		if (!userId || typeof userId !== "string") {
 			return NextResponse.json(
 				{ message: "Valid User ID is required" },
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
 		);
 
 		response.cookies.set("session", encryptedSession, {
-			httpOnly: true,
+			httpOnly: false,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "strict",
 			maxAge: 24 * 60 * 60,
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
 		});
 
 		response.cookies.set("refresh", encryptedRefresh, {
-			httpOnly: true,
+			httpOnly: false,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "strict",
 			maxAge: 24 * 60 * 60 * 7,
