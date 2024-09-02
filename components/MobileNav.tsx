@@ -1,3 +1,5 @@
+import { useAuth } from "@/app/AuthProvide";
+import type { Category } from "@prisma/client";
 import { MenuIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +21,10 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 
-export const MobileNav: FC = (): ReactNode => {
+export const MobileNav: FC<{
+  category: Category[];
+}> = ({ category }): ReactNode => {
+  const { user } = useAuth();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -53,7 +58,15 @@ export const MobileNav: FC = (): ReactNode => {
                 <AccordionTrigger>Dashboard</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-y-2 text-muted-foreground">
-                    <Link href="/seller/dashboard">Dashboard</Link>
+                    <Link
+                      href={
+                        user?.role === "SELLER"
+                          ? "/seller/dashboard/store"
+                          : "/customer/dashboard"
+                      }
+                    >
+                      Dashboard
+                    </Link>
                     <Link href="/seller/dashboard/products">Products</Link>
                     <Link href="/seller/dashboard/orders">Orders</Link>
                     <Link href="/seller/dashboard/store">Store</Link>
@@ -74,14 +87,12 @@ export const MobileNav: FC = (): ReactNode => {
                 <AccordionTrigger>Categories</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-y-2 text-muted-foreground">
-                    <Link href="/products?category=skateboards">
-                      Skateboards
-                    </Link>
-                    <Link href="/products?category=clothing">Clothing</Link>
-                    <Link href="/products?category=shoes">Shoes</Link>
-                    <Link href="/products?category=accessories">
-                      Accessories
-                    </Link>
+                    {category?.map((item, i) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      <Link key={i} href={`/products?category=${item.slug}`}>
+                        {item.name}
+                      </Link>
+                    ))}
                   </div>
                 </AccordionContent>
               </AccordionItem>

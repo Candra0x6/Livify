@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/app/AuthProvide";
 import { MobileNav } from "@/components/MobileNav";
 import SearchModal from "@/components/SearchMenu";
 import SidebarNav from "@/components/element/SidebarNav";
@@ -10,12 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getSession } from "@/lib/auth/auth";
+import { fetchCategory } from "@/services/api/productsApi";
+import type { Category } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({ children }: React.PropsWithChildren) {
   const router = useRouter();
-
+  const { user } = useAuth();
+  const [category, setCategory] = useState<Category[]>([]);
   const handleValueChange = (value: string) => {
     switch (value) {
       case "store":
@@ -28,6 +32,14 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
   };
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+    if (!user || user.role !== "SELLER") {
+      router.push("/");
+    }
+    const getCategory = async () => {
+      const categoryData = await fetchCategory();
+      setCategory(categoryData.categories);
+    };
+    getCategory();
     const storeValidation = async () => {
       const session = await getSession();
       !session?.storeId && router.push("/seller/dashboard/store/profile");
@@ -42,7 +54,7 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
         </aside>
         <div className="flex flex-col w-full h-fit z-10">
           <nav className="w-full flex items-center justify-between bg-white shadow-nav p-6">
-            <MobileNav />
+            <MobileNav category={category} />
             <div className="flex gap-x-5">
               <div className=" flex justify-end ">
                 <SearchModal />

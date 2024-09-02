@@ -25,23 +25,24 @@ export interface IconMenuListProps {
   icon: IconType;
 }
 
-const accountMenuList: IconMenuListProps[] = [
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: CgProfile,
-  },
-  {
-    name: "Dashboard",
-    href: "/seller/dashboard/store",
-    icon: TbLayoutDashboard,
-  },
-];
-
 export default function AuthButton() {
   const router = useRouter();
   const { user, updateAuth } = useAuth();
-  console.log(user);
+  const accountMenuList: IconMenuListProps[] = [
+    {
+      name: "Profile",
+      href: "/profile",
+      icon: CgProfile,
+    },
+    {
+      name: "Dashboard",
+      href:
+        user?.role === "SELLER"
+          ? "/seller/dashboard/store"
+          : "/customer/dashboard",
+      icon: TbLayoutDashboard,
+    },
+  ];
   const signOutAction = async () => {
     try {
       await signOut(user?.id as string);

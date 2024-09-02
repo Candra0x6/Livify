@@ -96,7 +96,7 @@ export const Navbar: FC<{ user: User | undefined }> = () => {
                     <DesktopNav category={category} />
                   </div>
                   <div className="flex lg:hidden">
-                    <MobileNav />
+                    <MobileNav category={category} />
                   </div>
                   <div className="hidden lg:flex mr-2">
                     <Image src={logo} alt="Livify." className="" />

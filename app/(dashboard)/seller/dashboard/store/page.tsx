@@ -78,28 +78,28 @@ export default function Dashboard() {
             title: "Total Product",
             Icon: TUSerIcon,
             alt: "total-user-icon",
-            value: totalProducts?.store.pagination?.total,
+            value: totalProducts?.store.pagination?.total || 0,
           },
           {
             id: 1,
             title: "Total Order",
             Icon: TOrderIcon,
             alt: "total-order-icon",
-            value: totalOrders?.store?.total,
+            value: totalOrders?.store?.total || 0,
           },
           {
             id: 2,
             title: "Total Sales",
             Icon: TSalesIcon,
             alt: "total-sales-icon",
-            value: totalSales?.store?.total,
+            value: totalSales?.store?.total || 0,
           },
           {
             id: 3,
             title: "Total Pending",
             Icon: TPendingIcon,
             alt: "total-pending-icon",
-            value: totalPending?.store?.total,
+            value: totalPending?.store?.total || 0,
           },
         ]);
       } catch (err) {
@@ -132,16 +132,6 @@ export default function Dashboard() {
           ))
         )}
       </div>
-      {/* Pending <div className="mt-10">
-        <Card className="bg-white p-4 rounded-lg space-y-5 w-full">
-          <CardHeader className="flex items-center justify-between w-full">
-            <CardTitle className="font-medium text-2xl">Sales Detail</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="text-4xl font-bold text-center">SOON</div>
-          </CardContent>
-        </Card>
-      </div> */}
     </div>
   );
 }
