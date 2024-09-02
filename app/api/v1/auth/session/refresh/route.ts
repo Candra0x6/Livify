@@ -1,4 +1,5 @@
 import generateToken from "@/hooks/generateToken";
+import { useCookie } from "@/hooks/useCookie";
 import { decrypt, encrypt } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { cookies } from "next/headers";
@@ -16,6 +17,7 @@ type RefreshData = {
 
 export async function PATCH(request: NextRequest) {
 	try {
+		const { setCookie } = useCookie()
 		const { sessionToken, refreshToken } = await request.json();
 		console.log(refreshToken);
 		if (!sessionToken || !refreshToken) {
@@ -59,7 +61,7 @@ export async function PATCH(request: NextRequest) {
 		const encryptedSession = await encrypt(sessionData, "session");
 		const encryptedRefresh = await encrypt(refreshData, "refresh");
 
-		const res = NextResponse.json(
+		const response = NextResponse.json(
 			{
 				success: true,
 				sessionId: updatedSession.id,
@@ -69,22 +71,10 @@ export async function PATCH(request: NextRequest) {
 			{ status: 200 },
 		);
 
-		res.cookies.set("session", encryptedSession, {
-			httpOnly: false,
-			secure: false,
-			sameSite: "strict",
-			maxAge: 24 * 60 * 60,
-			path: "/",
-		});
 
-		res.cookies.set("refresh", encryptedRefresh, {
-			httpOnly: false,
-			secure: false,
-			sameSite: "strict",
-			maxAge: 7 * 24 * 60 * 60,
-			path: "/",
-		});
-		return res;
+		setCookie(response, "session", encryptedSession);
+		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
+		return response;
 	} catch (error) {
 		console.error("Error in session refresh:", error);
 		return NextResponse.json(

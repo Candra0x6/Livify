@@ -42,6 +42,8 @@ export default async function RootLayout({
 }) {
   const sessionCookies = cookies().get("session")?.value;
   const refreshCookies = cookies().get("refresh")?.value;
+  console.log(sessionCookies);
+  console.log(refreshCookies);
   const session = await getSession();
   const refresh = await getRefresh();
   let user: UserDetails | undefined;
@@ -49,6 +51,7 @@ export default async function RootLayout({
     const res = await getUserDetail(session.userId);
     user = res;
   }
+
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
@@ -60,6 +63,7 @@ export default async function RootLayout({
               refreshToken={refresh as RefreshSession}
             />
           )}
+
           <header className="w-full bg-black">
             <Navbar user={user?.data} />
           </header>
