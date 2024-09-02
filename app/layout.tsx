@@ -3,6 +3,7 @@ import Footer from "@/components/element/Footer";
 import { Navbar } from "@/components/element/Navbar";
 import { getUserDetail } from "@/hooks/auth/useUserDetail";
 import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
+import { useCookie } from "@/hooks/useCookie";
 import { getRefresh, getSession } from "@/lib/auth/auth";
 import type { UserDetails } from "@/types/api/response/UserResponse";
 import type { RefreshSession, User } from "@prisma/client";
@@ -42,6 +43,8 @@ export default async function RootLayout({
 }) {
   const sessionCookies = cookies().get("session")?.value;
   const refreshCookies = cookies().get("refresh")?.value;
+  const { getCookie } = useCookie();
+  console.log(getCookie);
   console.log(sessionCookies);
   console.log(refreshCookies);
   const session = await getSession();
@@ -51,7 +54,7 @@ export default async function RootLayout({
     const res = await getUserDetail(session.userId);
     user = res;
   }
-
+  console.log(session);
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">

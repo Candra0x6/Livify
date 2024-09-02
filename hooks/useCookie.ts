@@ -38,7 +38,7 @@ export function useCookie() {
   };
 
   const getCookie = (request: Request, name: string): string | undefined => {
-    const cookies = parse(request.headers.get('Cookie') || '');
+    const cookies = parse(request.headers.get('session') || '');
     return cookies[name];
   };
 
