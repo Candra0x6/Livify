@@ -27,10 +27,6 @@ export function useCookie() {
       ...options,
     };
 
-    if (isProduction && process.env.NEXT_PUBLIC_COOKIE_DOMAIN) {
-      cookieOptions.domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
-    }
-
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
     const cookieString = serialize(name, stringValue, cookieOptions);
 
