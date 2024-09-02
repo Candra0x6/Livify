@@ -44,8 +44,16 @@ export default async function RootLayout({
   const sessionCookies = cookies().get("session")?.value;
   const refreshCookies = cookies().get("refresh")?.value;
   const session = await getSession();
-  const refresh = await getRefresh();
-  const user = await getUserDetail(session?.userId as string);
+  let refresh: RefreshSession | null = null;
+  if (session?.message === "Expire" || !session) {
+    const res = await getRefresh();
+    refresh = res;
+  }
+  let user: UserDetails | undefined;
+  if (session?.userId) {
+    const res = await getUserDetail(session?.userId as string);
+    user = res;
+  }
 
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
