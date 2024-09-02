@@ -40,11 +40,12 @@ const accountMenuList: IconMenuListProps[] = [
 
 export default function AuthButton() {
   const router = useRouter();
-  const { user, updateAuth } = useAuth(); // Gunakan hook useAuth
+  const { user, updateAuth } = useAuth();
+  console.log(user);
   const signOutAction = async () => {
     try {
       await signOut(user?.id as string);
-      updateAuth(null, null); // Perbarui state autentikasi
+      updateAuth(null, null);
     } catch (err) {
       console.error(err);
     } finally {
@@ -77,7 +78,7 @@ export default function AuthButton() {
           {accountMenuList.map((menu, i) => (
             <DropdownMenuItem
               onClick={() => router.push(menu.href)}
-              key={menu.name} // Gunakan menu.name sebagai key yang unik
+              key={menu.name}
               className="gap-x-2 flex items-center"
             >
               <menu.icon className="text-lg" />

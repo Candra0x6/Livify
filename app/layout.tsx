@@ -10,7 +10,7 @@ import type { RefreshSession, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
 import { cookies } from "next/headers";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./AuthProvide";
+import { AuthProvider, useAuth } from "./AuthProvide";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -43,18 +43,14 @@ export default async function RootLayout({
 }) {
   const sessionCookies = cookies().get("session")?.value;
   const refreshCookies = cookies().get("refresh")?.value;
-  const { getCookie } = useCookie();
-  console.log(getCookie);
-  console.log(sessionCookies);
-  console.log(refreshCookies);
   const session = await getSession();
   const refresh = await getRefresh();
   let user: UserDetails | undefined;
   if (session?.userId) {
     const res = await getUserDetail(session.userId);
     user = res;
+    console.log(res);
   }
-  console.log(session);
   return (
     <html lang="en" className={`${poppins.variable} ${nunitoSans.variable}`}>
       <body className="relative bg-background">
