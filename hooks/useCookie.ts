@@ -26,7 +26,7 @@ export function useCookie() {
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60,
       path: '/',
-      domain: '.livify.vercel.app',
+      domain: ".vercel.app",
       ...options,
     };
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
