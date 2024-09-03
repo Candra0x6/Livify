@@ -24,14 +24,11 @@ export function useCookie() {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 24 * 60 * 60, // 1 day
+      maxAge: 24 * 60 * 60,
       path: '/',
-      domain: 'livify.vercel.app',
+      domain: '.livify.vercel.app',
       ...options,
     };
-
-
-
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
 
     cookieStore.set(name, stringValue, cookieOptions);
