@@ -29,11 +29,10 @@ export function useCookie() {
       domain: process.env.COOKIE_DOMAIN || undefined,
       ...options,
     };
-    console.log(process.env.COOKIE_DOMAIN)
-    // console.log(isProduction)
-    // if (isProduction === false && process.env.COOKIE_DOMAIN) {
-    //   cookieOptions.domain = undefined;
-    // }
+
+    if (isProduction && !process.env.COOKIE_DOMAIN) {
+      cookieOptions.domain = undefined;
+    }
 
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
 
