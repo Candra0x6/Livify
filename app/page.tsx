@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { fetchCategory, fetchProducts } from "@/services/api/productsApi";
 import type { Category, Product } from "@prisma/client";
 import { ChevronRight } from "lucide-react";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaArrowRightLong, FaGithub, FaStar } from "react-icons/fa6";
@@ -26,7 +25,6 @@ export default function RootPage() {
   console.log(process.env.NEXT_PUBLIC_COOKIE_DOMAIN);
 
   useEffect(() => {
-    cookies().set("test", "test");
     async function fetchData() {
       try {
         setLoading(true);
