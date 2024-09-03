@@ -72,8 +72,8 @@ export async function PATCH(request: NextRequest) {
 		);
 
 
-		setCookie(response, "session", encryptedSession);
-		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
+		setCookie("session", encryptedSession);
+		setCookie("refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
 		return response;
 	} catch (error) {
 		console.error("Error in session refresh:", error);

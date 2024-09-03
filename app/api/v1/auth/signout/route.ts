@@ -1,4 +1,5 @@
 
+import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -9,8 +10,8 @@ export async function POST(request: NextRequest) {
 			{ status: 200 },
 		);
 
-		response.cookies.delete("session");
-		response.cookies.delete("refresh");
+		cookies().delete("session");
+		cookies().delete("refresh");
 
 		return response;
 	} catch (error) {

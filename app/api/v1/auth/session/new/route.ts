@@ -7,6 +7,7 @@ import type { CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+
 export async function POST(request: Request) {
 	try {
 		const { setCookie } = useCookie()
@@ -71,8 +72,8 @@ export async function POST(request: Request) {
 			{ status: 200, statusText: "Success Create Session and Refresh Token" },
 		);
 
-		setCookie(response, "session", encryptedSession, { maxAge: 24 * 60 * 60 });
-		setCookie(response, "refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
+		setCookie("session", encryptedSession, { maxAge: 24 * 60 * 60 });
+		setCookie("refresh", encryptedRefresh, { maxAge: 24 * 60 * 60 * 7 });
 
 		return response;
 	} catch (error) {

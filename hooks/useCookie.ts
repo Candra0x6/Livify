@@ -1,5 +1,6 @@
-import { parse, serialize } from 'cookie';
-import type { NextResponse } from 'next/server';
+// File: lib/cookieUtils.ts
+import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
 
 interface CookieOptions {
   httpOnly?: boolean;
@@ -12,12 +13,13 @@ interface CookieOptions {
 
 export function useCookie() {
   const setCookie = (
-    response: NextResponse,
     name: string,
     value: string,
     options: Partial<CookieOptions> = {}
   ): void => {
     const isProduction = process.env.NODE_ENV === 'production';
+    const cookieStore = cookies();
+
     const cookieOptions: CookieOptions = {
       httpOnly: true,
       secure: isProduction,
@@ -28,18 +30,23 @@ export function useCookie() {
     };
 
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-    const cookieString = serialize(name, stringValue, cookieOptions);
 
-    response.headers.append('Set-Cookie', cookieString);
+    cookieStore.set(name, stringValue, cookieOptions);
   };
 
-  const getCookie = (request: Request, name: string): string | undefined => {
-    const cookies = parse(request.headers.get('session') || '');
-    return cookies[name];
+  const getCookie = (name: string): string | undefined => {
+    const cookieStore = cookies();
+    return cookieStore.get(name)?.value;
+  };
+
+  const getCookieFromRequest = (request: NextRequest, name: string): string | undefined => {
+    const cookieStore = request.cookies;
+    return cookieStore.get(name)?.value;
   };
 
   return {
     setCookie,
     getCookie,
+    getCookieFromRequest,
   };
 }
