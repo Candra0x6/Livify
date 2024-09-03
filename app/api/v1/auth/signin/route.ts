@@ -1,6 +1,7 @@
 import { compare, getRefresh, getSession } from "@/lib/auth/auth";
 import prisma from "@/lib/db";
 import { Base64 } from "js-base64";
+import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -14,6 +15,8 @@ export async function POST(request: NextRequest) {
 				{ status: 400 },
 			);
 		}
+
+		cookies().set("testCok", "TextValue")
 		const encodePassword = Base64.encode(password);
 		const user = await prisma.user.findUnique({
 			where: {
