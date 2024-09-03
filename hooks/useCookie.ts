@@ -29,7 +29,7 @@ export function useCookie() {
       domain: process.env.COOKIE_DOMAIN || undefined,
       ...options,
     };
-
+    console.log(isProduction)
     if (isProduction && !process.env.COOKIE_DOMAIN) {
       cookieOptions.domain = undefined;
     }
