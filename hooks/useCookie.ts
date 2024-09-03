@@ -24,10 +24,15 @@ export function useCookie() {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 24 * 60 * 60,
+      maxAge: 24 * 60 * 60, // 1 day
       path: '/',
+      domain: process.env.COOKIE_DOMAIN || undefined,
       ...options,
     };
+
+    if (isProduction && !process.env.COOKIE_DOMAIN) {
+      cookieOptions.domain = undefined;
+    }
 
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
 
