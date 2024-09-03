@@ -3,7 +3,6 @@ import { cookies, headers } from "next/headers";
 
 export default async function SignInPage() {
   const cookie = cookies().get("session")?.value;
-  console.log("cookie", document.cookie);
   return (
     <div className="flex justify-center items-center h-screen ">
       <div className="w-full max-w-lg rounded-2xl bg-white p-10 shadow-lg dark:bg-[#2c2c2e]">
