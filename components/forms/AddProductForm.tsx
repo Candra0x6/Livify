@@ -22,7 +22,7 @@ import {
 } from "@/lib/validators/productSchema";
 import type { Category } from "@prisma/client";
 import { Box } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -43,7 +43,10 @@ export async function getCategory() {
   return data;
 }
 
-export const AddProductForm: React.FC = () => {
+export const AddProductForm: React.FC<{
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}> = ({ setOpen }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const { createProduct } = useProductActions();
   const form = useForm<productPayload>({
     resolver: zodResolver(productSchema),
@@ -64,13 +67,20 @@ export const AddProductForm: React.FC = () => {
       const categoryData = await getCategory();
       setCategory(categoryData);
     }
-    fetchData();
-  }, []);
+    if (!category) {
+      fetchData();
+    }
+  }, [category]);
   const onSubmit = async (values: productPayload) => {
     try {
+      setLoading(true);
       await createProduct(values);
     } catch (err) {
+      setLoading(true);
       console.log(err);
+    } finally {
+      setOpen(false);
+      setLoading(false);
     }
   };
   return (
@@ -256,8 +266,14 @@ export const AddProductForm: React.FC = () => {
             )}
           />
         </div>
-        <Button type="submit" className="font-medium w-full text-md">
-          Submit
+        <Button
+          disabled={loading}
+          type="submit"
+          className={`font-medium w-full text-md ${
+            loading ? "opacity-70" : ""
+          }`}
+        >
+          {loading ? "Creating Product ..." : "Submit"}
         </Button>
       </form>
     </Form>
