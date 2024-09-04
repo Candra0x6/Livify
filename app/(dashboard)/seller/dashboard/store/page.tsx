@@ -30,8 +30,41 @@ export interface MetricDataType {
   value: number | undefined;
 }
 
+type MetricUpdateType = {
+  [key: string]: number | undefined;
+};
+const metric = [
+  {
+    id: 0,
+    title: "Total Product",
+    Icon: TUSerIcon,
+    alt: "total-user-icon",
+    value: 0,
+  },
+  {
+    id: 1,
+    title: "Total Order",
+    Icon: TOrderIcon,
+    alt: "total-order-icon",
+    value: 0,
+  },
+  {
+    id: 2,
+    title: "Total Sales",
+    Icon: TSalesIcon,
+    alt: "total-sales-icon",
+    value: 0,
+  },
+  {
+    id: 3,
+    title: "Total Pending",
+    Icon: TPendingIcon,
+    alt: "total-pending-icon",
+    value: 0,
+  },
+];
 export default function Dashboard() {
-  const [metricData, setMetricData] = useState<MetricDataType[]>([]);
+  const [metricData, setMetricData] = useState<MetricDataType[]>(metric);
   const [chartData, setChartData] = useState([
     {
       date: new Date().toISOString().slice(0, 10),
@@ -39,7 +72,18 @@ export default function Dashboard() {
     },
   ]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const updateMetrics = (updates: MetricUpdateType) => {
+    setMetricData((prevMetricData) =>
+      prevMetricData.map((metric) => ({
+        ...metric,
+        value:
+          updates[metric.title] !== undefined
+            ? updates[metric.title]
+            : metric.value,
+      }))
+    );
+  };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <lem>
   useEffect(() => {
     async function fetchData() {
       try {
@@ -71,37 +115,12 @@ export default function Dashboard() {
             sales: totalSales?.store?.total as number,
           },
         ]);
-
-        setMetricData([
-          {
-            id: 0,
-            title: "Total Product",
-            Icon: TUSerIcon,
-            alt: "total-user-icon",
-            value: totalProducts?.store.pagination?.total || 0,
-          },
-          {
-            id: 1,
-            title: "Total Order",
-            Icon: TOrderIcon,
-            alt: "total-order-icon",
-            value: totalOrders?.store?.total || 0,
-          },
-          {
-            id: 2,
-            title: "Total Sales",
-            Icon: TSalesIcon,
-            alt: "total-sales-icon",
-            value: totalSales?.store?.total || 0,
-          },
-          {
-            id: 3,
-            title: "Total Pending",
-            Icon: TPendingIcon,
-            alt: "total-pending-icon",
-            value: totalPending?.store?.total || 0,
-          },
-        ]);
+        updateMetrics({
+          "Total Pending": totalPending?.store.total,
+          "Total Sales": totalSales?.store.total,
+          "Total Product": totalProducts?.store?.pagination?.total,
+          "Total Order": totalOrders?.store.total,
+        });
       } catch (err) {
         setLoading(true);
         console.error(err);
@@ -112,7 +131,6 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
-
   return (
     <div className="">
       <SectionHeader title="Dashboard" description="Show up your store stats" />
