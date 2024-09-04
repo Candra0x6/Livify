@@ -82,7 +82,7 @@ function Cart() {
     appearance,
   };
   return (
-    <div className="container mx-auto mt-36 ">
+    <div className="container mx-auto mt-36 min-h-screen">
       {clientSecret && (
         <Elements options={options} stripe={stripePromise}>
           <PaymentDialog
