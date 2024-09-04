@@ -1,30 +1,29 @@
 "use client";
 import { ProductCard } from "@/components/cards/ProductCard";
-import CheckoutForm from "@/components/forms/CheckOutForm";
 import { ProductDetailSkeletonCard } from "@/components/skeletons/ProductDetailCard";
 import ProductGridSkeletonCard from "@/components/skeletons/ProductGridSkeletonCard";
 import { Button } from "@/components/ui/button";
 import Flex from "@/components/ui/flex";
 import Grid from "@/components/ui/grid";
-import { Heading } from "@/components/ui/heading";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { Text } from "@/components/ui/text";
 import { useOrderAction } from "@/hooks/useOrderAction";
 import usePayment from "@/hooks/usePayment";
 import { useProductActions } from "@/hooks/useProductAction";
 import type { ProductDetails } from "@/interfaces/models/Product";
+import { getSession } from "@/lib/auth/auth";
 import { formatPrice } from "@/lib/utils";
 import {
   fetchProductById,
   fetchRecommendationProducts,
 } from "@/services/api/productsApi";
-import type { Product } from "@prisma/client";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
-import { type ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa6";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import CartIcon from "../../../../../public/icons/cart.svg";
@@ -40,7 +39,8 @@ const stripePromise = loadStripe(
 );
 export default function ProductDetailsPage() {
   const url = useSearchParams();
-  const statusPayment = url.get("redirect_status");
+  const router = useRouter();
+  const status = url.get("redirect_status");
   const { createOrder } = useOrderAction();
   const { addCart } = useProductActions();
   const { handlePayment } = usePayment();
@@ -92,10 +92,10 @@ export default function ProductDetailsPage() {
       await createOrder(productBodies as productBody[], "SOLO");
     } catch (error) {
       console.error("Checkout failed:", error);
-      alert("Failed to place order. Please try again.");
+      toast.error("Failed to place order. Please try again.");
     }
   };
-  if (statusPayment === "succeeded") {
+  if (status === "succeeded") {
     handleOrder();
   }
 
@@ -190,10 +190,16 @@ export default function ProductDetailsPage() {
               <Flex gap={20} className="pt-5">
                 <Button
                   onClick={async () => {
-                    const payment = await handlePayment(
-                      data?.price as unknown as number
-                    );
-                    setClientSecret(payment);
+                    const session = await getSession();
+                    if (session?.userId) {
+                      const payment = await handlePayment(
+                        data?.price as unknown as number
+                      );
+                      setClientSecret(payment);
+                    } else {
+                      toast.error("Account required to purchase!");
+                      router.push("/sign-in");
+                    }
                   }}
                   className=" px-14 flex items-center gap-x-1 "
                 >
