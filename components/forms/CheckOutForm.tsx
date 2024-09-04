@@ -8,6 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import type { StripePaymentElementOptions } from "@stripe/stripe-js";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
@@ -17,6 +18,7 @@ export default function CheckoutForm({
   data: ProductDetails | Cart;
 }) {
   const stripe = useStripe();
+  const path = usePathname();
   const elements = useElements();
   const { createOrder } = useOrderAction();
   const [message, setMessage] = useState<null | string>(null);
@@ -87,8 +89,21 @@ export default function CheckoutForm({
           );
 
           const order = await createOrder(productBodies, "SOLO");
+
           if (order) {
-            window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirmation?orderId=${order?.data?.order?.id}&currency=${paymentIntent.currency}&amount=${paymentIntent.amount}&status=${paymentIntent.status}`;
+            if (path === "/cart") {
+              await fetch(
+                `${
+                  process.env.NEXT_PUBLIC_BASE_URL
+                }/api/v1/cart/${localStorage.getItem("cartId")}/delete`,
+                {
+                  method: "DELETE",
+                }
+              );
+              window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirmation?orderId=${order?.data?.order?.id}&currency=${paymentIntent.currency}&amount=${paymentIntent.amount}&status=${paymentIntent.status}`;
+            } else {
+              window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirmation?orderId=${order?.data?.order?.id}&currency=${paymentIntent.currency}&amount=${paymentIntent.amount}&status=${paymentIntent.status}`;
+            }
           }
         } catch (error) {
           console.error("Checkout failed:", error);
