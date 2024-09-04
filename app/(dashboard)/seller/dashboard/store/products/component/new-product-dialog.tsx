@@ -8,11 +8,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { Dispatch, SetStateAction } from "react";
 import { IoAdd } from "react-icons/io5";
 
-export const NewProductDialog: React.FC = () => {
+export const NewProductDialog: React.FC<{
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}> = ({ open, setOpen }) => {
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DialogTrigger asChild>
         <Button size="icon" className=" text-white p-0 aspect-square">
           <IoAdd className="text-white text-2xl p-0" />
@@ -26,7 +30,7 @@ export const NewProductDialog: React.FC = () => {
             done.
           </DialogDescription>
         </DialogHeader>
-        <AddProductForm />
+        <AddProductForm setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );
