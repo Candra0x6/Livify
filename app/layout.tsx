@@ -3,14 +3,13 @@ import Footer from "@/components/element/Footer";
 import { Navbar } from "@/components/element/Navbar";
 import { getUserDetail } from "@/hooks/auth/useUserDetail";
 import RefreshHandler, { type sessionEror } from "@/hooks/refreshHandler";
-import { useCookie } from "@/hooks/useCookie";
 import { getRefresh, getSession } from "@/lib/auth/auth";
 import type { UserDetails } from "@/types/api/response/UserResponse";
 import type { RefreshSession, User } from "@prisma/client";
 import { Nunito_Sans, Poppins } from "next/font/google";
 import { cookies } from "next/headers";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider, useAuth } from "./AuthProvide";
+import { AuthProvider } from "./AuthProvide";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -32,7 +31,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js Kit",
+  title: "Livify",
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
