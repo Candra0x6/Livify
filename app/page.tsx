@@ -22,7 +22,6 @@ export default function RootPage() {
   const [category, setcategory] = useState<{ categories: Category[] }>();
   const [products, setProducts] = useState<ProductDetails[]>();
   const [loading, setLoading] = useState<boolean>(true);
-  console.log(process.env.NEXT_PUBLIC_COOKIE_DOMAIN);
 
   useEffect(() => {
     async function fetchData() {
