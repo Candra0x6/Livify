@@ -12,19 +12,26 @@ import {
 } from "@/components/ui/dialog";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { AiOutlineDelete } from "react-icons/ai";
 
 export const DeleteProductDialog: React.FC<{ Id: string }> = ({ Id }) => {
   const [isOpen, setIsOpen] = useState(false);
   const handleDelete = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/product/${Id}/delete`,
-      {
-        method: "DELETE",
-      }
-    );
-    const data = res.json();
-    console.log(data);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products/${Id}/delete`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = res.json();
+      toast.success("Success Delete Product");
+      return data;
+    } catch (error) {
+      console.error(error);
+      toast.success("Failed Delete Product");
+    }
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
