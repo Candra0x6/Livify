@@ -61,28 +61,24 @@ export const SignInForm: React.FC<{ cookie: string | undefined }> = ({
   const onSubmit = async (data: signInData) => {
     try {
       setToggleButton(true);
-      const signInAction = await signIn(data);
-      if (cookie) {
-        toast.error("You already Sign-In");
-        window.location.href = "/";
-      } else {
-        if (signInAction.ok) {
-          const userData = await signInAction.json();
-          if (userData) {
-            const response = newSession(userData.user.id);
-            const sessionData = await (await response).json();
-            updateAuth(sessionData, userData.user);
-            if ((await response).ok) {
-              toast.success("Successfully Login");
-              router.push("/");
-            } else {
-              toast.error("Something went wrong, try again later");
-            }
-          }
+      const response = await signIn(data);
+      if (response.ok) {
+        const userData = await response.json();
+        const sessionResponse = await newSession(userData.user.id);
+        const sessionData = await sessionResponse.json();
+        updateAuth(sessionData, userData.user);
+        if (sessionResponse.ok) {
+          toast.success("Successfully logged in");
+          router.push("/");
+        } else {
+          toast.error("Something went wrong, try again later");
         }
+      } else {
+        const data = await response.json();
+        toast.error(data.message);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     } finally {
       setToggleButton(false);
     }
