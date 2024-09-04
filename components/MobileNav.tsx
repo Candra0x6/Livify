@@ -89,7 +89,7 @@ export const MobileNav: FC<{
                   <div className="flex flex-col gap-y-2 text-muted-foreground">
                     {category?.map((item, i) => (
                       // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                      <Link key={i} href={`/products?category=${item.slug}`}>
+                      <Link key={i} href={`/products?categoryId=${item.id}`}>
                         {item.name}
                       </Link>
                     ))}
