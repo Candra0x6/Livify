@@ -1,5 +1,6 @@
 "use client";
 import slugify from "@/hooks/slugify";
+import { truncateText } from "@/hooks/truncateText";
 import { useProductActions } from "@/hooks/useProductAction";
 import type { ProductDetails } from "@/interfaces/models/Product";
 import { formatPrice } from "@/lib/utils";
@@ -60,7 +61,7 @@ export const ProductCard: React.FC<ProductDetailsProps> = React.memo(
           >
             <div className="flex justify-between">
               <h1 className="capitalize text-foreground font-medium md:text-xl text-sm">
-                {data?.name}
+                {truncateText(data?.name, 12)}
               </h1>
               <div className="flex items-center gap-x-1">
                 <FaStar color="#f8ed24" className="md:w-5 w-3" />
