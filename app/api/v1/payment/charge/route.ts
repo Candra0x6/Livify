@@ -6,7 +6,6 @@ import type { NextRequest } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log(body)
     const amount = Math.round(body.amount * 100)
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
