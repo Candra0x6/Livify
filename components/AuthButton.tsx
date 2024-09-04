@@ -30,11 +30,6 @@ export default function AuthButton() {
   const { user, updateAuth } = useAuth();
   const accountMenuList: IconMenuListProps[] = [
     {
-      name: "Profile",
-      href: "/profile",
-      icon: CgProfile,
-    },
-    {
       name: "Dashboard",
       href:
         user?.role === "SELLER"
