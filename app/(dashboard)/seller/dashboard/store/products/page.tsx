@@ -39,6 +39,7 @@ export default function Products() {
   const [date, setDate] = useState<Date>();
   const [keyword, setKeyword] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = () => {
@@ -63,7 +64,7 @@ export default function Products() {
         const data = await fetchStoreProductsBySearch(storeId, {
           query: keyword as string,
         });
-        setProducts(data?.store.products);
+        setProducts(data?.store?.products);
       } catch (err) {
         setLoading(true);
         console.error(err);
@@ -87,7 +88,10 @@ export default function Products() {
               </span>
             </div>
             <div className="h-full flex items-center">
-              <Button className="lg:px-10 lg:text-md text-sm">
+              <Button
+                onClick={() => setOpen(!open)}
+                className="lg:px-10 lg:text-md text-sm"
+              >
                 Create Product
               </Button>
             </div>
@@ -168,7 +172,7 @@ export default function Products() {
               />
             </div>
           </div>
-          <NewProductDialog />
+          <NewProductDialog open={open} setOpen={setOpen} />
         </div>
       </div>
       <Table className="bg-white shadow-sh-card p-10 rounded-lg">
