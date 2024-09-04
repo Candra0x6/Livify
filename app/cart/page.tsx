@@ -7,14 +7,16 @@ import { Button } from "@/components/ui/button";
 import { useCartAction } from "@/hooks/useCartAction";
 import usePayment from "@/hooks/usePayment";
 import { AllCartProducts, type CartProducts } from "@/interfaces/models/Cart";
+import { getSession } from "@/lib/auth/auth";
 import { formatPrice } from "@/lib/utils";
 import { fetchCart } from "@/services/api/cartApi";
-import type { CartItem, Product } from "@prisma/client";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import EmptyCart from "../../public/svg/empty-cart.png";
 import { PaymentDialog } from "../products/(route)/[storeSlug]/[productSlug]/component/payment-dialog";
 
@@ -24,38 +26,30 @@ const stripePromise = loadStripe(
 function Cart() {
   const { handlePayment } = usePayment();
   const url = useSearchParams();
-  const statusPayment = url.get("redirect_status");
-
+  const router = useRouter();
+  const [statusPayment, setStatusPayment] = useState<"success" | "failed">();
   const [clientSecret, setClientSecret] = useState("");
   const [cart, setCart] = useState<CartProducts[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
-  const { calculateTotal, onCheckOut, deleteCartItem } = useCartAction({
+  const { calculateTotal } = useCartAction({
     cart,
     setCart,
   });
 
   const handleCheckout = async () => {
     try {
+      const session = await getSession();
+
+      if (!session) {
+        toast.error("Account required to purchase!");
+        router.push("/sign-in");
+        return;
+      }
       setLoadingButton(true);
       const paymentData = await handlePayment(calculateTotal() as number);
 
       setClientSecret(paymentData);
-      if (statusPayment) {
-        const checkOutData = await onCheckOut();
-        if (checkOutData.data) {
-          const response = await fetch(
-            // @ts-ignore
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/cart/${cart[0].cartId}/delete`,
-            {
-              method: "DELETE",
-            }
-          );
-
-          const data = await response.json();
-          return data;
-        }
-      }
     } catch (err) {
       setLoadingButton(true);
       console.error(err);
@@ -70,6 +64,7 @@ function Cart() {
         setLoading(true);
         const data = await fetchCart();
         setCart(data.carts);
+        localStorage.setItem("cartId", data?.carts[0]?.cartId);
       } catch (err) {
         setLoading(true);
         console.error(err);
@@ -142,7 +137,6 @@ function Cart() {
 
               <Button
                 variant="default"
-                // onClick={async () => await onCheckOut(cart.map((item) => item))}
                 className="rounded-lg w-full place-items-end place-self-end justify-items-end"
                 onClick={handleCheckout}
                 disabled={loadingButton}
